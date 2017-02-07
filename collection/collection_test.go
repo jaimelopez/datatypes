@@ -10,7 +10,7 @@ func TestAddMethod(test *testing.T) {
 }
 
 func TestAddRangeMethod(test *testing.T) {
-	newElements := []string { "first element", "second element" }
+	newElements := []string{"first element", "second element"}
 
 	collection := NewEmptyCollection()
 	error := collection.AddRange(newElements)
@@ -43,7 +43,7 @@ func TestDeleteMethod(test *testing.T) {
 	elementTwo := "second element"
 	elementThree := "third element"
 
-	elements := []string { elementOne, elementTwo, elementThree }
+	elements := []string{elementOne, elementTwo, elementThree}
 
 	collection := NewCollection(elements)
 
@@ -75,8 +75,8 @@ func TestContainsAnyMethod(test *testing.T) {
 	elementTwo := "second element"
 	elementThree := "third element"
 
-	elements := []string { elementOne, elementTwo }
-	inexistentElements := []string { elementThree }
+	elements := []string{elementOne, elementTwo}
+	inexistentElements := []string{elementThree}
 
 	collection := NewCollection(elements)
 
