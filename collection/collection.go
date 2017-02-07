@@ -32,6 +32,12 @@ func (col *Collection) Add(element Element) error {
 }
 
 func (col *Collection) AddRange(elements CollectionElements) error {
+	//defer func() {
+	//	if recoverer := recover(); recoverer != nil {
+	//		return NewInvalidIterableElementError()
+	//	}
+	//}()
+
 	for _, element := range generic.ToSlice(elements) {
 		error := col.Add(element)
 
@@ -57,12 +63,12 @@ func (col *Collection) AddCollection(collection Collection) error {
 
 func (col *Collection) Delete(element Element) error {
 	for index, current := range col.elements {
-		if current != element {
-			continue
-		}
+		if reflect.DeepEqual(current, element) {
+			col.elements[index] = col.elements[col.Count()-1]
+			col.elements = col.elements[:col.Count()-1]
 
-		col.elements[index] = col.elements[col.Count()-1]
-		col.elements = col.elements[:col.Count()-1]
+			return nil
+		}
 	}
 
 	return NewElementNotFoundError()
@@ -98,6 +104,18 @@ func (col *Collection) ContainsAny(elements CollectionElements) bool {
 	}
 
 	return false
+}
+
+func (col *Collection) First(position int) Element {
+	return col.elements[0]
+}
+
+func (col *Collection) Last(position int) Element {
+	return col.elements[len(col.elements)-1]
+}
+
+func (col *Collection) ElementAt(position int) Element {
+	return col.elements[position]
 }
 
 func (col *Collection) Elements() []Element {
