@@ -1,12 +1,15 @@
 package collection
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestAddMethod(test *testing.T) {
+	element := "first element"
 	collection := NewEmptyCollection()
-	collection.Add("first element")
+	collection.Add(element)
+
+	if len(collection.elements) != 1 || collection.elements[0] != element {
+		test.Error("Wrong behaviour adding a element")
+	}
 }
 
 func TestAddRangeMethod(test *testing.T) {
@@ -15,14 +18,15 @@ func TestAddRangeMethod(test *testing.T) {
 	collection := NewEmptyCollection()
 	error := collection.AddRange(newElements)
 
-	if len(collection.elements) != len(newElements) {
-		test.Error("Wrong behaviour adding a element range")
-	}
-
 	if error != nil {
 		test.Error("Wrong error returned adding a element range")
 	}
 
+	if len(collection.elements) != len(newElements) {
+		test.Error("Wrong behaviour adding a element range")
+	}
+
+	// TODO
 	//invalidRange := "simple string"
 	//error = collection.AddRange(invalidRange)
 	//
@@ -32,10 +36,26 @@ func TestAddRangeMethod(test *testing.T) {
 }
 
 func TestAddCollectionMethod(test *testing.T) {
-	//newElements := []string { "first element", "second element" }
-	//
-	//collection := NewEmptyCollection()
-	//collection.Add("first element")
+	elementOne := "first element"
+	elementTwo := "second element"
+	elementThree := "third element"
+
+	collection := NewEmptyCollection()
+	collection.Add(elementOne)
+
+	otherCollection := NewEmptyCollection()
+	otherCollection.Add(elementTwo)
+	otherCollection.Add(elementThree)
+
+	error := collection.AddCollection(otherCollection)
+
+	if error != nil {
+		test.Error("Unexpected error adding a collection to another collection")
+	}
+
+	if len(collection.elements) != 3 {
+		test.Error("Wrong elements number adding a collection to another collection")
+	}
 }
 
 func TestDeleteMethod(test *testing.T) {
@@ -43,9 +63,11 @@ func TestDeleteMethod(test *testing.T) {
 	elementTwo := "second element"
 	elementThree := "third element"
 
-	elements := []string{elementOne, elementTwo, elementThree}
-
-	collection := NewCollection(elements)
+	collection := NewCollection([]string{
+		elementOne,
+		elementTwo,
+		elementThree,
+	})
 
 	error := collection.Delete(elementTwo)
 
@@ -53,22 +75,86 @@ func TestDeleteMethod(test *testing.T) {
 		test.Error("Unexpected error delenting an element")
 	}
 
-	if collection.Count() != 2 {
+	if len(collection.elements) != 2 {
 		test.Error("Invalid number of elements after a element deletion")
 	}
 
-	if collection.Elements()[0] != elementOne || collection.Elements()[1] != elementThree {
+	if collection.elements[0] != elementOne || collection.elements[1] != elementThree {
 		test.Error("Invalid expected elements after a single element deletion")
 	}
 }
 
-func TestDeleteRangeMethod(test *testing.T) {}
+func TestDeleteRangeMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+	elementThree := "third element"
+	elementFour := "fourth element"
 
-func TestContainsMethod(test *testing.T) {}
+	collection := NewCollection([]string{
+		elementOne,
+		elementTwo,
+		elementThree,
+		elementFour,
+	})
 
-func TestElementAtMethod(test *testing.T) {}
+	error := collection.DeleteRange([]string{elementOne, elementThree})
 
-func TestFirstMethod(test *testing.T) {}
+	if error != nil {
+		test.Error("Unexpected error delenting a range elements")
+	}
+
+	if len(collection.elements) != 2 {
+		test.Error("Wrong elements number deleting  a collection to another collection")
+	}
+
+	for _, element := range collection.elements {
+		if element == elementOne || element == elementThree {
+			test.Error("Elements not correctly deleted in DeleteRange method")
+		}
+	}
+}
+
+func TestDeleteCollectionMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+	elementThree := "third element"
+
+	collection := NewCollection([]string{
+		elementOne,
+		elementTwo,
+		elementThree,
+	})
+
+	otherCollection := NewEmptyCollection()
+	otherCollection.Add(elementOne)
+	otherCollection.Add(elementThree)
+
+	error := collection.DeleteCollection(otherCollection)
+
+	if error != nil {
+		test.Error("Unexpected error deleting a collection from another collection")
+	}
+
+	if len(collection.elements) != 1 || collection.elements[0] != elementTwo {
+		test.Error("Wrong elements number deleting a collection from another collection")
+	}
+}
+
+func TestContainsMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+	inexistentElement := "inexistent element"
+
+	collection := NewCollection([]string{elementOne, elementTwo})
+
+	if !collection.Contains(elementOne) {
+		test.Error("Contains return a false positive with existent elements")
+	}
+
+	if collection.Contains(inexistentElement) {
+		test.Error("Contains return a false positive with inexistent elements")
+	}
+}
 
 func TestContainsAnyMethod(test *testing.T) {
 	elementOne := "first element"
@@ -89,17 +175,58 @@ func TestContainsAnyMethod(test *testing.T) {
 	}
 }
 
+func TestFirstMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewCollection([]string{elementOne, elementTwo})
+
+	if collection.First() != elementOne {
+		test.Error("First method do not return the correct element")
+	}
+}
+
+func TestLastMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewCollection([]string{
+		elementOne,
+		elementTwo,
+	})
+
+	if collection.Last() != elementTwo {
+		test.Error("Last method do not return the correct element")
+	}
+}
+
+func TestElementAtMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewCollection([]string{elementOne, elementTwo})
+
+	if collection.ElementAt(0) != elementOne || collection.ElementAt(1) != elementTwo {
+		test.Error("Wrong returned element in specific position on ElementAt method")
+	}
+}
+
 func TestElementsMethod(test *testing.T) {
-	//elements := []string { "first element", "second element" }
-	//collection := NewCollection(elements)
-	//
-	//if collection.elements != collection.Elements() {
-	//	test.Error("")
-	//}
-	//
-	//if collection.Elements() != elements {
-	//	test.Error("")
-	//}
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewEmptyCollection()
+
+	if collection.Elements() != nil || len(collection.Elements()) != 0 {
+		test.Error("Elements method should return no elements on new empty instance")
+	}
+
+	collection.elements = append(collection.elements, elementOne)
+	collection.elements = append(collection.elements, elementTwo)
+
+	if collection.Elements()[0] != elementOne || collection.Elements()[1] != elementTwo {
+		test.Error("Elements method do not return the correct stored elements in the collection")
+	}
 }
 
 func TestCountMethod(test *testing.T) {

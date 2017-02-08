@@ -49,16 +49,8 @@ func (col *Collection) AddRange(elements CollectionElements) error {
 	return nil
 }
 
-func (col *Collection) AddCollection(collection Collection) error {
-	for _, element := range collection.elements {
-		error := col.Add(element)
-
-		if error != nil {
-			return error
-		}
-	}
-
-	return nil
+func (col *Collection) AddCollection(collection *Collection) error {
+	return col.AddRange(collection.elements)
 }
 
 func (col *Collection) Delete(element Element) error {
@@ -86,6 +78,10 @@ func (col *Collection) DeleteRange(elements CollectionElements) error {
 	return nil
 }
 
+func (col *Collection) DeleteCollection(collection *Collection) error {
+	return col.DeleteRange(collection.elements)
+}
+
 func (col *Collection) Contains(element Element) bool {
 	for _, iterator := range col.elements {
 		if reflect.DeepEqual(iterator, element) {
@@ -106,11 +102,11 @@ func (col *Collection) ContainsAny(elements CollectionElements) bool {
 	return false
 }
 
-func (col *Collection) First(position int) Element {
+func (col *Collection) First() Element {
 	return col.elements[0]
 }
 
-func (col *Collection) Last(position int) Element {
+func (col *Collection) Last() Element {
 	return col.elements[len(col.elements)-1]
 }
 
