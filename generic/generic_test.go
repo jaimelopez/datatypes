@@ -3,11 +3,22 @@ package generic
 import "testing"
 
 func TestToSliceMethod(test *testing.T) {
-	element := "first element"
-	collection := NewEmptyCollection()
-	collection.Add(element)
+	elementOne := "first element"
+	elementTwo := "second element"
 
-	if len(collection.elements) != 1 || collection.elements[0] != element {
-		test.Error("Wrong behaviour adding a element")
+	genericIterableObject := []string{elementOne, elementTwo}
+
+	slicedObject := ToSlice(genericIterableObject)
+
+	if len(genericIterableObject) != len(slicedObject) {
+		test.Error("ushdushduhs")
 	}
+
+	defer func() {
+		if recover() == nil {
+			test.Error("Non-iterable object does not return a panic")
+		}
+	}()
+
+	ToSlice("non-iterable object")
 }
