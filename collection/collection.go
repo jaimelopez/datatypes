@@ -31,18 +31,18 @@ func (col *Collection) Add(element Element) error {
 	return nil
 }
 
-func (col *Collection) AddRange(elements CollectionElements) error {
-	//defer func() {
-	//	if recoverer := recover(); recoverer != nil {
-	//		return NewInvalidIterableElementError()
-	//	}
-	//}()
+func (col *Collection) AddRange(elements CollectionElements) (err error) {
+	defer func() {
+		if recoverer := recover(); recoverer != nil {
+			err = NewInvalidIterableElementError()
+		}
+	}()
 
 	for _, element := range generic.ToSlice(elements) {
-		error := col.Add(element)
+		err := col.Add(element)
 
-		if error != nil {
-			return error
+		if err != nil {
+			return err
 		}
 	}
 
@@ -66,12 +66,18 @@ func (col *Collection) Delete(element Element) error {
 	return NewElementNotFoundError()
 }
 
-func (col *Collection) DeleteRange(elements CollectionElements) error {
-	for _, element := range generic.ToSlice(elements) {
-		error := col.Delete(element)
+func (col *Collection) DeleteRange(elements CollectionElements) (err error) {
+	defer func() {
+		if recoverer := recover(); recoverer != nil {
+			err = NewInvalidIterableElementError()
+		}
+	}()
 
-		if error != nil {
-			return error
+	for _, element := range generic.ToSlice(elements) {
+		err := col.Delete(element)
+
+		if err != nil {
+			return err
 		}
 	}
 
@@ -92,14 +98,20 @@ func (col *Collection) Contains(element Element) bool {
 	return false
 }
 
-func (col *Collection) ContainsAny(elements CollectionElements) bool {
+func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
+	defer func() {
+		if recoverer := recover(); recoverer != nil {
+			result = false
+		}
+	}()
+
 	for _, element := range generic.ToSlice(elements) {
 		if col.Contains(element) {
 			return true
 		}
 	}
 
-	return false
+	return
 }
 
 func (col *Collection) First() Element {

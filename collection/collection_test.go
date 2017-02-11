@@ -26,13 +26,12 @@ func TestAddRangeMethod(test *testing.T) {
 		test.Error("Wrong behaviour adding a element range")
 	}
 
-	// TODO
-	//invalidRange := "simple string"
-	//error = collection.AddRange(invalidRange)
-	//
-	//if error != InvalidIterableElement {
-	//	test.Error("Method should return an InvalidIterableElement error adding an invalid range")
-	//}
+	invalidRange := "simple string"
+	error = collection.AddRange(invalidRange)
+
+	if error == nil {
+		test.Error("Method should return an InvalidIterableElement error adding an invalid range")
+	}
 }
 
 func TestAddCollectionMethod(test *testing.T) {
