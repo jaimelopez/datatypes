@@ -174,6 +174,23 @@ func TestContainsAnyMethod(test *testing.T) {
 	}
 }
 
+func TestGetMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewCollection([]Element{elementOne, elementTwo})
+
+	firstElement := collection.Get()
+
+	if firstElement != elementOne {
+		test.Error("Wrong extracted element on Get method")
+	}
+
+	if len(collection.elements) != 1 {
+		test.Error("Wrong remained elements in the collection on Get method")
+	}
+}
+
 func TestFirstMethod(test *testing.T) {
 	elementOne := "first element"
 	elementTwo := "second element"
@@ -271,5 +288,12 @@ func TestNewCollection(test *testing.T) {
 
 	if len(collection.elements) != len(elements) {
 		test.Error("New collection don't store elements parameters as elements")
+	}
+
+	singleElement := "element as string"
+	singleElementCollection := NewCollection(singleElement)
+
+	if len(singleElementCollection.elements) != 1 || singleElementCollection.elements[0] != singleElement {
+		test.Error("New collection with a single element don't instance the right value")
 	}
 }
