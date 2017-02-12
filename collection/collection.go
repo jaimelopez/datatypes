@@ -19,16 +19,16 @@ type Collection struct {
 // If the collection is empty and has no elements, it will take the type of
 // that element as type definition for the collection
 func (col *Collection) Add(element Element) error {
-	if col.Contains(element) {
-		return NewDuplicatedElementError()
-	}
-
 	if col.IsEmpty() {
 		col.definition = reflect.TypeOf(element)
 	}
 
-	if col.definition != reflect.TypeOf(element) {
+	if !col.isHomogeneousWith(element) {
 		return NewInvalidElementTypeError(col.definition.Name())
+	}
+
+	if col.Contains(element) {
+		return NewDuplicatedElementError()
 	}
 
 	col.elements = append(col.elements, element)
@@ -65,6 +65,10 @@ func (col *Collection) AddCollection(collection *Collection) error {
 // Removes an specified already stored element
 // If it's not found the method will return an error
 func (col *Collection) Delete(element Element) error {
+	if !col.isHomogeneousWith(element) {
+		return NewInvalidElementTypeError(col.definition.Name())
+	}
+
 	for index, current := range col.elements {
 		if reflect.DeepEqual(current, element) {
 			col.elements[index] = col.elements[col.Count()-1]
@@ -134,7 +138,7 @@ func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
 // Extract the first element and return it
 // Keep in mind that this method will modify the collection elements substracting that element
 func (col *Collection) Get() Element {
-	element := col.elements[0]
+	element := col.First()
 	col.elements = col.elements[1:]
 
 	return element
@@ -172,6 +176,10 @@ func (col *Collection) Count() int {
 // Checks if the collection is empty or not
 func (col *Collection) IsEmpty() bool {
 	return col.Count() == 0
+}
+
+func (col *Collection) isHomogeneousWith(element Element) bool {
+	return col.definition == reflect.TypeOf(element)
 }
 
 // Instances a new empty collection

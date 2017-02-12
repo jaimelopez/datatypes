@@ -5,10 +5,20 @@ import "testing"
 func TestAddMethod(test *testing.T) {
 	element := "first element"
 	collection := NewEmptyCollection()
-	collection.Add(element)
+	error := collection.Add(element)
+
+	if error != nil {
+		test.Error("Unexpected error adding a element")
+	}
 
 	if len(collection.elements) != 1 || collection.elements[0] != element {
 		test.Error("Wrong behaviour adding a element")
+	}
+
+	error = collection.Add(element)
+
+	if error == nil {
+		test.Error("Duplicated keys should return an error on Add method")
 	}
 }
 
