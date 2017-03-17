@@ -184,7 +184,7 @@ func TestContainsAnyMethod(test *testing.T) {
 	}
 }
 
-func TestGetMethod(test *testing.T) {
+func TestExtractMethod(test *testing.T) {
 	elementOne := "first element"
 	elementTwo := "second element"
 

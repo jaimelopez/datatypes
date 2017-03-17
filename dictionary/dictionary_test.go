@@ -22,6 +22,12 @@ func TestAddMethod(test *testing.T) {
 	if error == nil {
 		test.Error("Duplicated keys should return an error on Add method")
 	}
+
+	differentTypeKeyElement, differentTypeValueElement := 1, 2
+
+	if dictionary.Add(differentTypeKeyElement, differentTypeValueElement) == nil {
+		test.Error("Add method should throw an exception trying to insert a non-homogeneous elements")
+	}
 }
 
 func TestAddKeyValueElementMethod(test *testing.T) {
@@ -45,7 +51,7 @@ func TestAddKeyValueElementMethod(test *testing.T) {
 	}
 }
 
-func TestAddRangeMethod(test *testing.T) { /* TODO */ }
+func TestAddRangeMethod(test *testing.T) { /* @TODO */ }
 
 func TestContainsMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
@@ -102,17 +108,43 @@ func TestGetMethod(test *testing.T) {
 	}
 }
 
-func TestFirstMethod(test *testing.T) { /* TODO */ }
+func TestFirstMethod(test *testing.T) { /* @TODO */ }
 
-func TestLastMethod(test *testing.T) { /* TODO */ }
+func TestLastMethod(test *testing.T) { /* @TODO */ }
 
-func TestElementsMethod(test *testing.T) { /* TODO */ }
+func TestElementsMethod(test *testing.T) { /* @TODO */ }
 
-func TestGetKeysMethod(test *testing.T) { /* TODO */ }
+func TestGetKeysMethod(test *testing.T) { /* @TODO */ }
 
-func TestGetValuesMethod(test *testing.T) { /* TODO */ }
+func TestGetValuesMethod(test *testing.T) { /* @TODO */ }
 
-func TestCountMethod(test *testing.T) { /* TODO */ }
+func TestCountMethod(test *testing.T) {
+	dictionary := NewEmptyDictionary()
+
+	if dictionary.Count() != 0 {
+		test.Error("Count method returns wrong size of collection when it's empty")
+	}
+
+	dictionary.Add("key", "value")
+
+	if dictionary.Count() == 0 {
+		test.Error("Count method returns 0 size when collection has elements")
+	}
+}
+
+func TestEmptyMethod(test *testing.T) {
+	dictionary := NewEmptyDictionary()
+
+	if !dictionary.IsEmpty() {
+		test.Error("Empty method returns true when it's really empty")
+	}
+
+	dictionary.Add("key", "value")
+
+	if dictionary.IsEmpty() {
+		test.Error("Empty method returns false when it's not really empty")
+	}
+}
 
 func TestNewEmptyDictionary(test *testing.T) {
 	emptyDictionary := NewEmptyDictionary()
