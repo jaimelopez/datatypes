@@ -1,24 +1,25 @@
 package dictionary
 
-import (
-	"errors"
-	"fmt"
-)
+import "fmt"
 
 const InvalidKeyValueElementTypeErrorString = "Invalid key-value element type: dictionary must be homogeneous to %s-%s"
 const DuplicatedKeyErrorString = "Duplicated key in dictionary"
 const EmptyDictionaryErrorString = "Empty dictionary can not be iterable"
+const ElementNotFoundErrorString = "Element not found"
 
-func NewInvalidKeyValueElementTypeError(keyType string, valueType string) error {
+func NewInvalidKeyValueElementTypeError(keyType string, valueType string) {
 	message := fmt.Sprintf(InvalidKeyValueElementTypeErrorString, keyType, valueType)
-
-	return errors.New(message)
+	panic(message)
 }
 
-func NewDuplicatedKeyError() error {
-	return errors.New(DuplicatedKeyErrorString)
+func NewDuplicatedKeyError() {
+	panic(DuplicatedKeyErrorString)
 }
 
-func NewEmptyDictionaryErrorString() error {
-	return errors.New(EmptyDictionaryErrorString)
+func NewEmptyDictionaryErrorString() {
+	panic(EmptyDictionaryErrorString)
+}
+
+func NewElementNotFoundError() {
+	panic(ElementNotFoundErrorString)
 }

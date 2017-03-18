@@ -1,47 +1,47 @@
 package collection
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestAddMethod(test *testing.T) {
 	element := "first element"
 	collection := NewEmptyCollection()
-	error := collection.Add(element)
 
-	if error != nil {
-		test.Error("Unexpected error adding a element")
-	}
+	assert.NotPanics(test, func() {
+		collection.Add(element)
+	}, "Wrong behaviour adding a element: bad error")
 
 	if len(collection.elements) != 1 || collection.elements[0] != element {
 		test.Error("Wrong behaviour adding a element")
 	}
 
-	error = collection.Add(element)
-
-	if error == nil {
-		test.Error("Duplicated keys should return an error on Add method")
-	}
+	assert.Panics(test, func() {
+		collection.Add(element)
+	}, "Duplicated keys should return an error on Add method")
 }
 
 func TestAddRangeMethod(test *testing.T) {
 	newElements := []string{"first element", "second element"}
 
 	collection := NewEmptyCollection()
-	error := collection.AddRange(newElements)
 
-	if error != nil {
-		test.Error("Wrong error returned adding a element range")
-	}
+	assert.NotPanics(test, func() {
+		collection.AddRange(newElements)
+	}, "Wrong error returned adding a element range")
 
-	if len(collection.elements) != len(newElements) {
-		test.Error("Wrong behaviour adding a element range")
-	}
+	assert.Equal(test,
+		len(collection.elements),
+		len(newElements),
+		"Wrong behaviour adding a element range")
 
 	invalidRange := "simple string"
-	error = collection.AddRange(invalidRange)
 
-	if error == nil {
-		test.Error("Method should return an InvalidIterableElement error adding an invalid range")
-	}
+	assert.Panics(test, func() {
+		collection.AddRange(invalidRange)
+	}, "Method should return an InvalidIterableElement error adding an invalid range")
 }
 
 func TestAddCollectionMethod(test *testing.T) {
@@ -56,15 +56,85 @@ func TestAddCollectionMethod(test *testing.T) {
 	otherCollection.Add(elementTwo)
 	otherCollection.Add(elementThree)
 
-	error := collection.AddCollection(otherCollection)
+	assert.NotPanics(test, func() {
+		collection.AddCollection(otherCollection)
+	}, "Unexpected error adding a collection to another collection")
 
-	if error != nil {
-		test.Error("Unexpected error adding a collection to another collection")
+	assert.Len(test, collection.elements, 3, "Wrong elements number adding a collection to another collection")
+}
+
+func TestFirstMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewCollection([]string{elementOne, elementTwo})
+
+	assert.Exactly(test, collection.First(), elementOne, "First method do not return the correct element")
+}
+
+func TestLastMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewCollection([]string{
+		elementOne,
+		elementTwo,
+	})
+
+	assert.Exactly(test, collection.Last(), elementTwo, "Last method do not return the correct element")
+}
+
+func TestElementAtMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewCollection([]string{elementOne, elementTwo})
+
+	assert.Equal(test, collection.ElementAt(0), elementOne, "Wrong returned element in specific position on ElementAt method")
+	assert.Equal(test, collection.ElementAt(1), elementTwo, "Wrong returned element in specific position on ElementAt method")
+}
+
+func TestElementsMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewEmptyCollection()
+
+	assert.Nil(test, collection.Elements(), "Elements method should return no elements on new empty instance")
+	assert.Empty(test, collection.Elements(), "Elements method should return no elements on new empty instance")
+
+	collection.elements = append(collection.elements, elementOne)
+	collection.elements = append(collection.elements, elementTwo)
+
+	assert.Exactly(test, collection.Elements()[0], elementOne, "Elements method do not return the correct stored elements in the collection")
+	assert.Exactly(test, collection.Elements()[1], elementTwo, "Elements method do not return the correct stored elements in the collection")
+}
+
+func TestExtractMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+
+	collection := NewCollection([]Element{elementOne, elementTwo})
+
+	firstElement := collection.Extract()
+
+	assert.Exactly(test, firstElement, elementOne, "Wrong extracted element on Extract method")
+	assert.Len(test, collection.elements, 1, "Wrong remained elements in the collection on Extract method")
+
+	newCollection := NewCollection([]Element{elementOne, elementTwo})
+	counter := 0
+
+	for !newCollection.IsEmpty() {
+		_ = newCollection.Extract()
+
+		counter++
 	}
 
-	if len(collection.elements) != 3 {
-		test.Error("Wrong elements number adding a collection to another collection")
-	}
+	assert.Exactly(test, counter, 2, "Wrong behaviour iterating over the collection with Extract method")
+}
+
+func TestSetMethod(test *testing.T) {
+	/* @TODO */
 }
 
 func TestDeleteMethod(test *testing.T) {
@@ -78,19 +148,14 @@ func TestDeleteMethod(test *testing.T) {
 		elementThree,
 	})
 
-	error := collection.Delete(elementTwo)
+	assert.NotPanics(test, func() {
+		collection.Delete(elementTwo)
+	}, "Unexpected error delenting an element")
 
-	if error != nil {
-		test.Error("Unexpected error delenting an element")
-	}
+	assert.Len(test, collection.elements, 2, "Invalid number of elements after a element deletion")
 
-	if len(collection.elements) != 2 {
-		test.Error("Invalid number of elements after a element deletion")
-	}
-
-	if collection.elements[0] != elementOne || collection.elements[1] != elementThree {
-		test.Error("Invalid expected elements after a single element deletion")
-	}
+	assert.Exactly(test, collection.elements[0], elementOne, "Invalid expected elements after a single element deletion")
+	assert.Exactly(test, collection.elements[1], elementThree, "Invalid expected elements after a single element deletion")
 }
 
 func TestDeleteRangeMethod(test *testing.T) {
@@ -106,20 +171,15 @@ func TestDeleteRangeMethod(test *testing.T) {
 		elementFour,
 	})
 
-	error := collection.DeleteRange([]string{elementOne, elementThree})
+	assert.NotPanics(test, func() {
+		collection.DeleteRange([]string{elementOne, elementThree})
+	}, "Unexpected error delenting a range elements")
 
-	if error != nil {
-		test.Error("Unexpected error delenting a range elements")
-	}
-
-	if len(collection.elements) != 2 {
-		test.Error("Wrong elements number deleting  a collection to another collection")
-	}
+	assert.Len(test, collection.elements, 2, "Wrong elements number deleting  a collection to another collection")
 
 	for _, element := range collection.elements {
-		if element == elementOne || element == elementThree {
-			test.Error("Elements not correctly deleted in DeleteRange method")
-		}
+		assert.NotEqual(test, element, elementOne, "Elements not correctly deleted in DeleteRange method")
+		assert.NotEqual(test, element, elementThree, "Elements not correctly deleted in DeleteRange method")
 	}
 }
 
@@ -138,15 +198,12 @@ func TestDeleteCollectionMethod(test *testing.T) {
 	otherCollection.Add(elementOne)
 	otherCollection.Add(elementThree)
 
-	error := collection.DeleteCollection(otherCollection)
+	assert.NotPanics(test, func() {
+		collection.DeleteCollection(otherCollection)
+	}, "Unexpected error deleting a collection from another collection")
 
-	if error != nil {
-		test.Error("Unexpected error deleting a collection from another collection")
-	}
-
-	if len(collection.elements) != 1 || collection.elements[0] != elementTwo {
-		test.Error("Wrong elements number deleting a collection from another collection")
-	}
+	assert.Len(test, collection.elements, 1, "Wrong elements number deleting a collection from another collection")
+	assert.Exactly(test, collection.elements[0], elementTwo, "Wrong elements number deleting a collection from another collection")
 }
 
 func TestContainsMethod(test *testing.T) {
@@ -156,13 +213,8 @@ func TestContainsMethod(test *testing.T) {
 
 	collection := NewCollection([]string{elementOne, elementTwo})
 
-	if !collection.Contains(elementOne) {
-		test.Error("Contains return a false positive with existent elements")
-	}
-
-	if collection.Contains(inexistentElement) {
-		test.Error("Contains return a false positive with inexistent elements")
-	}
+	assert.True(test, collection.Contains(elementOne), "Contains return a false positive with existent elements")
+	assert.False(test, collection.Contains(inexistentElement), "Contains return a false positive with inexistent elements")
 }
 
 func TestContainsAnyMethod(test *testing.T) {
@@ -175,120 +227,34 @@ func TestContainsAnyMethod(test *testing.T) {
 
 	collection := NewCollection(elements)
 
-	if !collection.ContainsAny(elements) {
-		test.Error("ContainsAny return a false positive with existent elements")
-	}
-
-	if collection.ContainsAny(inexistentElements) {
-		test.Error("ContainsAny return a false positive with inexistent elements")
-	}
-}
-
-func TestExtractMethod(test *testing.T) {
-	elementOne := "first element"
-	elementTwo := "second element"
-
-	collection := NewCollection([]Element{elementOne, elementTwo})
-
-	firstElement := collection.Get()
-
-	if firstElement != elementOne {
-		test.Error("Wrong extracted element on Get method")
-	}
-
-	if len(collection.elements) != 1 {
-		test.Error("Wrong remained elements in the collection on Get method")
-	}
-}
-
-func TestFirstMethod(test *testing.T) {
-	elementOne := "first element"
-	elementTwo := "second element"
-
-	collection := NewCollection([]string{elementOne, elementTwo})
-
-	if collection.First() != elementOne {
-		test.Error("First method do not return the correct element")
-	}
-}
-
-func TestLastMethod(test *testing.T) {
-	elementOne := "first element"
-	elementTwo := "second element"
-
-	collection := NewCollection([]string{
-		elementOne,
-		elementTwo,
-	})
-
-	if collection.Last() != elementTwo {
-		test.Error("Last method do not return the correct element")
-	}
-}
-
-func TestElementAtMethod(test *testing.T) {
-	elementOne := "first element"
-	elementTwo := "second element"
-
-	collection := NewCollection([]string{elementOne, elementTwo})
-
-	if collection.ElementAt(0) != elementOne || collection.ElementAt(1) != elementTwo {
-		test.Error("Wrong returned element in specific position on ElementAt method")
-	}
-}
-
-func TestElementsMethod(test *testing.T) {
-	elementOne := "first element"
-	elementTwo := "second element"
-
-	collection := NewEmptyCollection()
-
-	if collection.Elements() != nil || len(collection.Elements()) != 0 {
-		test.Error("Elements method should return no elements on new empty instance")
-	}
-
-	collection.elements = append(collection.elements, elementOne)
-	collection.elements = append(collection.elements, elementTwo)
-
-	if collection.Elements()[0] != elementOne || collection.Elements()[1] != elementTwo {
-		test.Error("Elements method do not return the correct stored elements in the collection")
-	}
+	assert.True(test, collection.ContainsAny(elements), "ContainsAny return a false positive with existent elements")
+	assert.False(test, collection.ContainsAny(inexistentElements), "ContainsAny return a false positive with inexistent elements")
 }
 
 func TestCountMethod(test *testing.T) {
 	collection := NewEmptyCollection()
 
-	if collection.Count() != 0 {
-		test.Error("Count method returns wrong size of collection when it's empty")
-	}
+	assert.Empty(test, collection.Count(), "Count method returns wrong size of collection when it's empty")
 
 	collection.Add("first element")
 
-	if collection.Count() == 0 {
-		test.Error("Count method returns 0 size when collection has elements")
-	}
+	assert.NotZero(test, collection.Count(), "Count method returns 0 size when collection has elements")
 }
 
 func TestIsEmptyMethod(test *testing.T) {
 	collection := NewEmptyCollection()
 
-	if !collection.IsEmpty() {
-		test.Error("Empty method returns true when it's really empty")
-	}
+	assert.True(test, collection.IsEmpty(), "Empty method returns true when it's really empty")
 
 	collection.Add("first element")
 
-	if collection.IsEmpty() {
-		test.Error("Empty method returns false when it's not really empty")
-	}
+	assert.False(test, collection.IsEmpty(), "Empty method returns false when it's not really empty")
 }
 
 func TestNewEmptyCollection(test *testing.T) {
 	emptyCollection := NewEmptyCollection()
 
-	if len(emptyCollection.elements) != 0 {
-		test.Error("Empty collection must to be instancied with no elements")
-	}
+	assert.Empty(test, emptyCollection.elements, "Empty collection must to be instancied with no elements")
 }
 
 func TestNewCollection(test *testing.T) {
@@ -296,14 +262,11 @@ func TestNewCollection(test *testing.T) {
 
 	collection := NewCollection(elements)
 
-	if len(collection.elements) != len(elements) {
-		test.Error("New collection don't store elements parameters as elements")
-	}
+	assert.Len(test, collection.elements, len(elements), "New collection don't store elements parameters as elements")
 
 	singleElement := "element as string"
 	singleElementCollection := NewCollection(singleElement)
 
-	if len(singleElementCollection.elements) != 1 || singleElementCollection.elements[0] != singleElement {
-		test.Error("New collection with a single element don't instance the right value")
-	}
+	assert.Len(test, singleElementCollection.elements, 1, "New collection with a single element don't instance the right value")
+	assert.Exactly(test, singleElementCollection.elements[0], singleElement, "New collection with a single element don't instance the right value")
 }

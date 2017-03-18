@@ -6,7 +6,7 @@ func ToSlice(slice interface{}) []interface{} {
 	sliceValues := reflect.ValueOf(slice)
 
 	if sliceValues.Kind() != reflect.Slice {
-		panic("Non-iterable type can not be converted to slice")
+		NewInvalidIterableElementError()
 	}
 
 	values := make([]interface{}, sliceValues.Len())

@@ -24,43 +24,124 @@ type Dictionary struct {
 // should be the same type such the other elements already stored in the dictionary.
 // If the dictionary is empty and have no elements, it will take the type of
 // the first element as type definition
-func (dic *Dictionary) Add(key KeyElement, value ValueElement) error {
+func (dic *Dictionary) Add(key KeyElement, value ValueElement) {
 	if dic.IsEmpty() {
 		dic.keyDefinition = reflect.TypeOf(key)
 		dic.valueDefinition = reflect.TypeOf(value)
 	}
 
 	if !dic.isHomogeneousWith(key, value) {
-		return NewInvalidKeyValueElementTypeError(dic.keyDefinition.Name(), dic.valueDefinition.Name())
+		NewInvalidKeyValueElementTypeError(dic.keyDefinition.Name(), dic.valueDefinition.Name())
 	}
 
 	if dic.Contains(key) {
-		return NewDuplicatedKeyError()
+		NewDuplicatedKeyError()
 	}
 
 	dic.lasKeytElement = &key
 	dic.elements[key] = value
-
-	return nil
 }
 
 // Adds an composed element KeyValueElement to the dictionary
-func (dic *Dictionary) AddKeyValueElement(element KeyValueElement) error {
-	return dic.Add(element.Key, element.Value)
+func (dic *Dictionary) AddKeyValueElement(element KeyValueElement) {
+	dic.Add(element.Key, element.Value)
 }
 
 // Inserts a range (slice) of KeyValueElement inside the dictionary
 // If the parameter can't be converted to a iterable data type it's return an error
-func (dic *Dictionary) AddRange(elements []KeyValueElement) error {
+func (dic *Dictionary) AddRange(elements []KeyValueElement) {
 	for _, element := range elements {
-		error := dic.AddKeyValueElement(element)
+		dic.AddKeyValueElement(element)
+	}
+}
 
-		if error != nil {
-			return error
-		}
+// Returns the first element without removing it from the collection
+func (dic *Dictionary) First() KeyValueElement {
+	for key, value := range dic.elements {
+		return KeyValueElement{key, value}
 	}
 
-	return nil
+	return KeyValueElement{}
+}
+
+// Returns the last element without removing it from the dictionary
+func (dic *Dictionary) Last() KeyValueElement {
+	return KeyValueElement{*dic.lasKeytElement, dic.elements[*dic.lasKeytElement]}
+}
+
+// Returns the specified key element in the dictionary
+func (dic *Dictionary) Element(key KeyElement) KeyValueElement {
+	return KeyValueElement{key, dic.elements[key]}
+}
+
+// Returns the stored elements as slice of this elements
+// This is the proper way to iterate over all the elements inside de dicionary
+// treating them as a normal range
+func (dic *Dictionary) Elements() KeyValueList {
+	return dic.elements
+}
+
+// Returns all the keys in the dicionary as a list of KeyElement
+func (dic *Dictionary) Keys() []KeyElement {
+	keys := []KeyElement{}
+
+	for current, _ := range dic.elements {
+		keys = append(keys, current)
+	}
+
+	return keys
+}
+
+// Returns all the values in the dicionary as a list of ValueElement
+func (dic *Dictionary) Values() []ValueElement {
+	values := []ValueElement{}
+
+	for _, current := range dic.elements {
+		values = append(values, current)
+	}
+
+	return values
+}
+
+// Extract the first element and return it
+// Keep in mind that this method will modify the dictionary elements substracting that element
+func (dic *Dictionary) Extract() KeyValueElement {
+	element := dic.First()
+	dic.Delete(element.Key)
+
+	return element
+}
+
+// Extract the specified key element and return it
+// Keep in mind that this method will modify the dictionary elements substracting that element
+func (dic *Dictionary) ExtractKey(key KeyElement) KeyValueElement {
+	element := KeyValueElement{key, dic.elements[key]}
+	dic.Delete(key)
+
+	return element
+}
+
+// Sets a new value for a specified index element
+func (dic *Dictionary) Set(key KeyElement, value KeyValueElement) {
+	if !dic.isHomogeneousWith(key, value) {
+		NewInvalidKeyValueElementTypeError(dic.keyDefinition.Name(), dic.valueDefinition.Name())
+	}
+
+	if !dic.Contains(key) {
+		NewElementNotFoundError()
+	}
+
+	dic.elements[key] = value
+}
+
+// Removes an specified already stored element
+// If it's not found the method will return an error
+func (dic *Dictionary) Delete(key KeyElement) {
+	if !dic.Contains(key) {
+		NewElementNotFoundError()
+	}
+
+	delete(dic.elements, key)
 }
 
 // Checks if the specified key element is already existing in the dictionary
@@ -79,63 +160,6 @@ func (dic *Dictionary) ContainsValue(element ValueElement) bool {
 	}
 
 	return false
-}
-
-// Extract the first element and return it
-// Keep in mind that this method will modify the dictionary elements substracting that element
-func (dic *Dictionary) Get() KeyValueElement {
-	element := dic.First()
-	delete(dic.elements, element.Key)
-
-	return element
-}
-
-// Returns the first element without removing it from the collection
-func (dic *Dictionary) First() KeyValueElement {
-	for key, value := range dic.elements {
-		return KeyValueElement{key, value}
-	}
-
-	return KeyValueElement{}
-}
-
-// Returns the last element without removing it from the dictionary
-func (dic *Dictionary) Last() KeyValueElement {
-	return KeyValueElement{dic.lasKeytElement, dic.elements[dic.lasKeytElement]}
-}
-
-// Returns the specified key element in the dictionary
-func (dic *Dictionary) Element(key KeyElement) KeyValueElement {
-	return KeyValueElement{key, dic.elements[key]}
-}
-
-// Returns the stored elements as slice of this elements
-// This is the proper way to iterate over all the elements inside de dicionary
-// treating them as a normal range
-func (dic *Dictionary) Elements() KeyValueList {
-	return dic.elements
-}
-
-// Returns all the keys in the dicionary as a list of KeyElement
-func (dic *Dictionary) GetKeys() []KeyElement {
-	keys := []KeyElement{}
-
-	for current, _ := range dic.elements {
-		keys = append(keys, current)
-	}
-
-	return keys
-}
-
-// Returns all the values in the dicionary as a list of ValueElement
-func (dic *Dictionary) GetValues() []ValueElement {
-	values := []ValueElement{}
-
-	for _, current := range dic.elements {
-		values = append(values, current)
-	}
-
-	return values
 }
 
 // Returns the number of elements inside the dicionary
