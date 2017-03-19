@@ -17,7 +17,7 @@ col := NewCollection(elements)
 for !col.IsEmpty() {
     element = col.Extract()
 
-    fmt.PrintLn(element)
+    fmt.Println(element)
 }
 ```
 
@@ -41,7 +41,7 @@ if !col.Contains(elementTwo) {
 }
 
 for _, elem := range col.Elements() {
-    fmt.PrintLn(elem)
+    fmt.Println(elem)
 }
 ```
 
@@ -50,8 +50,54 @@ for _, elem := range col.Elements() {
 
 ## dictionary
 Provides an easy dictionary (key => value) struct management
+
+This example fill the dictionary with two elements and then retrieves the first element:
+
 ```
 import "github.com/jaimelopez/datatypes/dictionary"
+
+elementOne := KeyValueElement{"1Key", "1Value"}
+elementTwo := KeyValueElement{"2Key", "2Value"}
+
+dic := NewDictionary(KeyValueList{elementOne, elementTwo})
+
+first := dic.First()
+
+fmt.Println(first)
+```
+
+In this example we will see how iterate over dictionaries:
+```
+import "github.com/jaimelopez/datatypes/dictionary"
+
+elementOne := KeyValueElement{"1Key", "1Value"}
+elementTwo := KeyValueElement{"2Key", "2Value"}
+
+dic := NewEmptyDictionary()
+dic.AddKeyValueElement(elementOne)
+dic.AddKeyValueElement(elementTwo)
+
+for key, value := range dic.Elements() {
+    fmt.Println(key)
+    fmt.Println(value)
+}
+```
+
+Getting all stored keys:
+```
+import "github.com/jaimelopez/datatypes/dictionary"
+
+elementOne := KeyValueElement{"1Key", "1Value"}
+elementTwo := KeyValueElement{"2Key", "2Value"}
+elementList := KeyValueList{elementOne, elementTwo}
+
+dic := NewEmptyDictionary()
+dic.AddRange(elementList)
+
+allKeys := dic.Keys()
+
+fmt.Println(allKeys)
+
 ```
 
 \* [See test for further more information about how play with it.](/dictionary/dictionary_test.go)
