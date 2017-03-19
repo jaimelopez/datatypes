@@ -22,6 +22,11 @@ type Element interface{}
 // elements := ElementList{"element1", "element2"}
 type ElementList []Element
 
+// Generic elements collection
+// Used as parameter type in order to allow encapsulate any
+// kind of iterable object including ElementList as well
+type CollectionElements interface{}
+
 // Non-sorted unique element and homogeneous lists
 type Collection struct {
 	definition reflect.Type
@@ -51,7 +56,7 @@ func (col *Collection) Add(element Element) {
 
 // Inserts a range (slice) inside the collection
 // If the parameter can't be converted to a iterable data type it's return an error
-func (col *Collection) AddRange(elements ElementList) {
+func (col *Collection) AddRange(elements CollectionElements) {
 	for _, element := range generic.ToSlice(elements) {
 		col.Add(element)
 	}
@@ -126,7 +131,7 @@ func (col *Collection) Delete(element Element) {
 
 // Removes all the found elements contained in the specified range (slice)
 // If the parameter can't be converted to a iterable data type it's return an error
-func (col *Collection) DeleteRange(elements ElementList) {
+func (col *Collection) DeleteRange(elements CollectionElements) {
 	for _, element := range generic.ToSlice(elements) {
 		col.Delete(element)
 	}
@@ -150,7 +155,7 @@ func (col *Collection) Contains(element Element) bool {
 }
 
 // Checks if any of the parameter elements there are already contained in the collection
-func (col *Collection) ContainsAny(elements ElementList) (result bool) {
+func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
 	defer func() {
 		if recover() != nil {
 			result = false
@@ -187,7 +192,7 @@ func NewEmptyCollection() *Collection {
 
 // This method allows to instance a new Collection with a group of elements
 // It accepts an enumerable
-func NewCollection(elements ElementList) (collection *Collection) {
+func NewCollection(elements CollectionElements) (collection *Collection) {
 	collection = new(Collection)
 
 	defer func(collection *Collection) {

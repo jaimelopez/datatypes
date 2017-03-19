@@ -183,7 +183,7 @@ func TestDeleteRangeMethod(test *testing.T) {
 	elementThree := "third element"
 	elementFour := "fourth element"
 
-	collection := NewCollection(CollectionElements{
+	collection := NewCollection(ElementList{
 		elementOne,
 		elementTwo,
 		elementThree,
