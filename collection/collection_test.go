@@ -77,7 +77,9 @@ func TestFirstMethod(test *testing.T) {
 	elementOne := "first element"
 	elementTwo := "second element"
 
-	collection := NewCollection([]string{elementOne, elementTwo})
+	collection := NewEmptyCollection()
+	collection.Add(elementOne)
+	collection.Add(elementTwo)
 
 	assert.Exactly(test, collection.First(), elementOne, "First method do not return the correct element")
 }
