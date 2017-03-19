@@ -1,3 +1,13 @@
+// Copyright (c) 2017 Jaime Lopez. All rights reserved.
+// Use of this source code is governed by a MIT license
+// that can be found in the LICENSE file.
+
+// Package datatypes/dictionary provides an easy dictionary (key => value) homogeneous
+// struct management, making the iteration of a unique-key lists more powerfull,
+// simple and clean, accepting primitives types and complex user structs as well.
+
+// This part of package contains the tests for the whole package
+
 package dictionary
 
 import (

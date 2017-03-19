@@ -1,3 +1,13 @@
+// Copyright (c) 2017 Jaime Lopez. All rights reserved.
+// Use of this source code is governed by a MIT license
+// that can be found in the LICENSE file.
+
+// The datatypes/collection package provides new structures and
+// behaviours to the iteration of non-sorted unique element and homogeneous
+// lists accepting primitives types and complex user structs as well.
+
+// This part of package contains the core behaviour
+
 package collection
 
 import (
@@ -5,10 +15,14 @@ import (
 	"reflect"
 )
 
+// Generic element
 type Element interface{}
-type ElementList []Element
-type CollectionElements interface{}
 
+// A list of elements
+// elements := ElementList{"element1", "element2"}
+type ElementList []Element
+
+// Non-sorted unique element and homogeneous lists
 type Collection struct {
 	definition reflect.Type
 	elements   []Element
@@ -37,7 +51,7 @@ func (col *Collection) Add(element Element) {
 
 // Inserts a range (slice) inside the collection
 // If the parameter can't be converted to a iterable data type it's return an error
-func (col *Collection) AddRange(elements CollectionElements) {
+func (col *Collection) AddRange(elements ElementList) {
 	for _, element := range generic.ToSlice(elements) {
 		col.Add(element)
 	}
@@ -112,7 +126,7 @@ func (col *Collection) Delete(element Element) {
 
 // Removes all the found elements contained in the specified range (slice)
 // If the parameter can't be converted to a iterable data type it's return an error
-func (col *Collection) DeleteRange(elements CollectionElements) {
+func (col *Collection) DeleteRange(elements ElementList) {
 	for _, element := range generic.ToSlice(elements) {
 		col.Delete(element)
 	}
@@ -136,7 +150,7 @@ func (col *Collection) Contains(element Element) bool {
 }
 
 // Checks if any of the parameter elements there are already contained in the collection
-func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
+func (col *Collection) ContainsAny(elements ElementList) (result bool) {
 	defer func() {
 		if recover() != nil {
 			result = false
@@ -173,7 +187,7 @@ func NewEmptyCollection() *Collection {
 
 // This method allows to instance a new Collection with a group of elements
 // It accepts an enumerable
-func NewCollection(elements CollectionElements) (collection *Collection) {
+func NewCollection(elements ElementList) (collection *Collection) {
 	collection = new(Collection)
 
 	defer func(collection *Collection) {

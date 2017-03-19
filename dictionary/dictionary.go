@@ -1,18 +1,36 @@
+// Copyright (c) 2017 Jaime Lopez. All rights reserved.
+// Use of this source code is governed by a MIT license
+// that can be found in the LICENSE file.
+
+// Package datatypes/dictionary provides an easy dictionary (key => value) homogeneous
+// struct management, making the iteration of a unique-key lists more powerfull,
+// simple and clean, accepting primitives types and complex user structs as well.
+
+// This part of package contains the core behaviour
+
 package dictionary
 
 import "reflect"
 
+// Represents Key in Key-Value object
 type KeyElement interface{}
+
+// Represents Value in Key-Value object
 type ValueElement interface{}
 
+// Key-Value object
 type KeyValueElement struct {
 	Key   KeyElement
 	Value ValueElement
 }
 
+// List of Key-Value elements
 type KeyValueList []KeyValueElement
+
+// Map of Key-Vale elements
 type KeyValueMap map[KeyElement]ValueElement
 
+// Easy dictionary (key => value) struct
 type Dictionary struct {
 	keyDefinition   reflect.Type
 	valueDefinition reflect.Type
