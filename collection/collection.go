@@ -11,9 +11,8 @@
 package collection
 
 import (
+	"datatypes/generic"
 	"reflect"
-
-	"github.com/jaimelopez/datatypes/generic"
 )
 
 // Generic element
