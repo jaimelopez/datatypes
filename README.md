@@ -45,7 +45,7 @@ for _, elem := range col.Elements() {
 }
 ```
 
-\* [See test for further more information about how play with it.](/blob/master/collection/collection_test.go)
+\* [See test for further more information about how play with it.](/collection/collection_test.go)
 
 
 ## dictionary
@@ -54,4 +54,4 @@ Provides an easy dictionary (key => value) struct management
 import "github.com/jaimelopez/datatypes/dictionary"
 ```
 
-\* [See test for further more information about how play with it.](/blob/master/dictionary/dictionary_test.go)
+\* [See test for further more information about how play with it.](/dictionary/dictionary_test.go)
