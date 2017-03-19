@@ -9,10 +9,10 @@ package datatypes
 
 // Unused imports help docs.
 import (
-	// collection package
-	_ "github.com/jaimelopez/datatypes/collection"
 	// dictionary package
 	_ "github.com/jaimelopez/datatypes/dictionary"
+	// collection package
+	_ "github.com/jaimelopez/datatypes/collection"
 	// generic package
 	_ "github.com/jaimelopez/datatypes/generic"
 	// string package
