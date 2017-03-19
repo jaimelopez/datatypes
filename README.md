@@ -45,7 +45,7 @@ for _, elem := range col.Elements() {
 }
 ```
 
-\* [See test for further more information about how play with it.](/collection/collection_test.go)
+\* [See tests for further more information about how play with it.](/collection/collection_test.go)
 
 
 ## dictionary
@@ -100,4 +100,4 @@ fmt.Println(allKeys)
 
 ```
 
-\* [See test for further more information about how play with it.](/dictionary/dictionary_test.go)
+\* [See tests for further more information about how play with it.](/dictionary/dictionary_test.go)
