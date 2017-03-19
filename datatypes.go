@@ -7,7 +7,7 @@
 //  @datatypes/string : Simple package which encapsulates some basic operations over strings
 package datatypes
 
-// blank imports help docs.
+// Unused imports help docs.
 import (
 	// collection package
 	_ "github.com/jaimelopez/datatypes/collection"
