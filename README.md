@@ -4,8 +4,9 @@ GoLang package which provides new iterable structs to easy managing and extends 
 ## collection
 Helps to the iteration of non-sorted unique element and homogeneous lists 
 
-Examples:
-```
+Example:
+
+```go
 import "github.com/jaimelopez/datatypes/collection"
 
 elementOne := "first element"
@@ -24,7 +25,8 @@ for !col.IsEmpty() {
 In this case Extract() method will extract and return the first element of the collection. If you want you can iterate over the elements with Elements() method which just return all the elements without removing these elements.
 
 Other example:
-```
+
+```go
 import "github.com/jaimelopez/datatypes/collection"
 
 elementOne := "first element"
@@ -53,7 +55,7 @@ Provides an easy dictionary (key => value) struct management
 
 This example fill the dictionary with two elements and then retrieves the first element:
 
-```
+```go
 import "github.com/jaimelopez/datatypes/dictionary"
 
 elementOne := KeyValueElement{"1Key", "1Value"}
@@ -67,7 +69,8 @@ fmt.Println(first)
 ```
 
 In this example we will see how iterate over dictionaries:
-```
+
+```go
 import "github.com/jaimelopez/datatypes/dictionary"
 
 elementOne := KeyValueElement{"1Key", "1Value"}
@@ -84,7 +87,8 @@ for key, value := range dic.Elements() {
 ```
 
 Getting all stored keys:
-```
+
+```go
 import "github.com/jaimelopez/datatypes/dictionary"
 
 elementOne := KeyValueElement{"1Key", "1Value"}
