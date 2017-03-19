@@ -10,12 +10,13 @@ type KeyValueElement struct {
 	Value ValueElement
 }
 
-type KeyValueList map[KeyElement]ValueElement
+type KeyValueList []KeyValueElement
+type KeyValueMap map[KeyElement]ValueElement
 
 type Dictionary struct {
 	keyDefinition   reflect.Type
 	valueDefinition reflect.Type
-	elements        KeyValueList
+	elements        KeyValueMap
 	lasKeytElement  *KeyElement
 }
 
@@ -49,7 +50,7 @@ func (dic *Dictionary) AddKeyValueElement(element KeyValueElement) {
 
 // Inserts a range (slice) of KeyValueElement inside the dictionary
 // If the parameter can't be converted to a iterable data type it's return an error
-func (dic *Dictionary) AddRange(elements []KeyValueElement) {
+func (dic *Dictionary) AddRange(elements KeyValueList) {
 	for _, element := range elements {
 		dic.AddKeyValueElement(element)
 	}
@@ -77,7 +78,7 @@ func (dic *Dictionary) Element(key KeyElement) KeyValueElement {
 // Returns the stored elements as slice of this elements
 // This is the proper way to iterate over all the elements inside de dicionary
 // treating them as a normal range
-func (dic *Dictionary) Elements() KeyValueList {
+func (dic *Dictionary) Elements() KeyValueMap {
 	return dic.elements
 }
 
@@ -122,7 +123,7 @@ func (dic *Dictionary) ExtractKey(key KeyElement) KeyValueElement {
 }
 
 // Sets a new value for a specified index element
-func (dic *Dictionary) Set(key KeyElement, value KeyValueElement) {
+func (dic *Dictionary) Set(key KeyElement, value ValueElement) {
 	if !dic.isHomogeneousWith(key, value) {
 		NewInvalidKeyValueElementTypeError(dic.keyDefinition.Name(), dic.valueDefinition.Name())
 	}
@@ -180,13 +181,13 @@ func (dic *Dictionary) isHomogeneousWith(key KeyElement, value ValueElement) boo
 // Instances a new empty dictionary
 func NewEmptyDictionary() *Dictionary {
 	dic := new(Dictionary)
-	dic.elements = make(KeyValueList)
+	dic.elements = make(KeyValueMap)
 
 	return dic
 }
 
 // This method allows to instance a new Dictionary with a group of key-value elements
-func NewDictionary(elements []KeyValueElement) *Dictionary {
+func NewDictionary(elements KeyValueList) *Dictionary {
 	dictionary := NewEmptyDictionary()
 	dictionary.AddRange(elements)
 

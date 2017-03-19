@@ -47,15 +47,25 @@ func TestAddKeyValueElementMethod(test *testing.T) {
 	}, "Duplicated keys should return an error on AddKeyValueElement method")
 }
 
-func TestAddRangeMethod(test *testing.T) { /* @TODO */ }
+func TestAddRangeMethod(test *testing.T) {
+	elementOne := KeyValueElement{"1Key", "1Value"}
+	elementTwo := KeyValueElement{"2Key", "2Value"}
+	elementList := KeyValueList{elementOne, elementTwo}
+
+	dictionay := NewEmptyDictionary()
+
+	assert.NotPanics(test, func() {
+		dictionay.AddRange(elementList)
+	}, "Wrong error returned adding a element range")
+
+	assert.Len(test, dictionay.elements, len(elementList), "Wrong behaviour adding a element range")
+}
 
 func TestFirstMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
 	elementTwo := KeyValueElement{"2Key", "2Value"}
 
-	dictionary := NewEmptyDictionary()
-	dictionary.AddKeyValueElement(elementOne)
-	dictionary.AddKeyValueElement(elementTwo)
+	dictionary := NewDictionary(KeyValueList{elementOne, elementTwo})
 
 	first := dictionary.First()
 
@@ -68,10 +78,11 @@ func TestLastMethod(test *testing.T) {
 	elementTwo := KeyValueElement{"2Key", "2Value"}
 	elementThree := KeyValueElement{"3Key", "3Value"}
 
-	dictionary := NewEmptyDictionary()
-	dictionary.AddKeyValueElement(elementOne)
-	dictionary.AddKeyValueElement(elementTwo)
-	dictionary.AddKeyValueElement(elementThree)
+	dictionary := NewDictionary(KeyValueList{
+		elementOne,
+		elementTwo,
+		elementThree,
+	})
 
 	last := dictionary.Last()
 
@@ -79,9 +90,31 @@ func TestLastMethod(test *testing.T) {
 	assert.Exactly(test, last.Value, elementThree.Value, "Last method do not return the correct element")
 }
 
-func TestElementMethod(test *testing.T) { /* @TODO */ }
+func TestElementMethod(test *testing.T) {
+	elementOne := KeyValueElement{"1Key", "1Value"}
+	elementTwo := KeyValueElement{"2Key", "2Value"}
 
-func TestElementsMethod(test *testing.T) { /* @TODO */ }
+	dictionary := NewDictionary(KeyValueList{elementOne, elementTwo})
+
+	assert.Exactly(test, dictionary.Element(elementOne.Key), elementOne, "Wrong returned element in specific position on Element method")
+	assert.Exactly(test, dictionary.Element(elementTwo.Key), elementTwo, "Wrong returned element in specific position on Element method")
+}
+
+func TestElementsMethod(test *testing.T) {
+	elementOne := KeyValueElement{"1Key", "1Value"}
+	elementTwo := KeyValueElement{"2Key", "2Value"}
+
+	dictionary := NewEmptyDictionary()
+
+	assert.Empty(test, dictionary.Elements(), "Elements method should return no elements on new empty instance")
+
+	dictionary.AddKeyValueElement(elementOne)
+	dictionary.AddKeyValueElement(elementTwo)
+
+	assert.NotEmpty(test, dictionary.Elements(), "Elements method do not return the correct stored elements in the collection")
+	assert.Equal(test, dictionary.Elements()[elementOne.Key], elementOne.Value, "Elements method do not return the correct stored elements in the collection")
+	assert.Equal(test, dictionary.Elements()[elementTwo.Key], elementTwo.Value, "Elements method do not return the correct stored elements in the collection")
+}
 
 func TestKeysMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
@@ -132,9 +165,7 @@ func TestExtractKeyMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
 	elementTwo := KeyValueElement{"2Key", "2Value"}
 
-	dictionary := NewEmptyDictionary()
-	dictionary.AddKeyValueElement(elementOne)
-	dictionary.AddKeyValueElement(elementTwo)
+	dictionary := NewDictionary(KeyValueList{elementOne, elementTwo})
 
 	extracted := dictionary.ExtractKey("2Key")
 
@@ -142,9 +173,40 @@ func TestExtractKeyMethod(test *testing.T) {
 	assert.Len(test, dictionary.elements, 1, "Wrong remained elements in the collection on ExtractKey method")
 }
 
-func TestSetMethod(test *testing.T) { /* @TODO */ }
+func TestSetMethod(test *testing.T) {
+	elementOne := KeyValueElement{"key1", "value1"}
+	elementTwo := KeyValueElement{"key2", "value2"}
+	elementTwoNewValue := "newValue2"
 
-func TestDeleteMethod(test *testing.T) { /* @TODO */ }
+	dictionary := NewDictionary(KeyValueList{elementOne, elementTwo})
+	dictionary.Set(elementTwo.Key, elementTwoNewValue)
+
+	newElement := dictionary.Element(elementTwo.Key)
+
+	assert.Exactly(test, newElement.Value, elementTwoNewValue, "Set method doesn't works properly")
+	assert.NotEqual(test, newElement, elementTwo, "Set method doesn't works properly")
+	assert.Len(test, dictionary.elements, 2, "Set method doesn't mantains the right items")
+}
+
+func TestDeleteMethod(test *testing.T) {
+	elementOne := KeyValueElement{"1Key", "1Value"}
+	elementTwo := KeyValueElement{"2Key", "2Value"}
+	elementThree := KeyValueElement{"3Key", "3Value"}
+
+	dictionary := NewDictionary(KeyValueList{
+		elementOne,
+		elementTwo,
+		elementThree,
+	})
+
+	assert.NotPanics(test, func() {
+		dictionary.Delete(elementTwo.Key)
+	}, "Unexpected error delenting an element")
+
+	assert.Len(test, dictionary.elements, 2, "Invalid number of elements after a element deletion")
+	assert.Equal(test, dictionary.Elements()[elementOne.Key], elementOne.Value, "Invalid expected elements after a single element deletion")
+	assert.Equal(test, dictionary.Elements()[elementThree.Key], elementThree.Value, "Invalid expected elements after a single element deletion")
+}
 
 func TestContainsMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
@@ -198,4 +260,14 @@ func TestNewEmptyDictionary(test *testing.T) {
 	assert.Empty(test, emptyDictionary.elements, "Empty dictionary must to be instancied with no elements")
 }
 
-func TestNewDictionary(test *testing.T) { /* TODO */ }
+func TestNewDictionary(test *testing.T) {
+	elementOne := KeyValueElement{"1Key", "1Value"}
+	elementTwo := KeyValueElement{"2Key", "2Value"}
+	elementList := KeyValueList{elementOne, elementTwo}
+
+	dictionary := NewDictionary(elementList)
+
+	assert.Len(test, dictionary.elements, len(elementList), "New dictionary don't store elements parameters as elements")
+	assert.Equal(test, dictionary.Elements()[elementOne.Key], elementOne.Value, "New dictionary don't store elements parameters as elements")
+	assert.Equal(test, dictionary.Elements()[elementTwo.Key], elementTwo.Value, "New dictionary don't store elements parameters as elements")
+}

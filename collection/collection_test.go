@@ -134,7 +134,16 @@ func TestExtractMethod(test *testing.T) {
 }
 
 func TestSetMethod(test *testing.T) {
-	/* @TODO */
+	elementOne := "first element"
+	elementTwo := "two element"
+
+	collection := NewEmptyCollection()
+	collection.Add(elementOne)
+
+	collection.Set(0, elementTwo)
+
+	assert.Exactly(test, collection.elements[0], elementTwo, "Set method doesn't works properly")
+	assert.Len(test, collection.elements, 1, "Set method doesn't mantains the right items")
 }
 
 func TestDeleteMethod(test *testing.T) {
