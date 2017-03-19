@@ -138,7 +138,7 @@ func TestKeysMethod(test *testing.T) {
 
 	assert.Exactly(test, keys[0], elementOne.Key, "Wrong extracted elements on Keys method")
 	assert.Exactly(test, keys[1], elementTwo.Key, "Wrong extracted elements on Keys method")
-	assert.Len(test, keys, dictionary.Count(), "Wrong get value elements in the dictionary on Keys method")
+	assert.Len(test, keys, dictionary.Size(), "Wrong get value elements in the dictionary on Keys method")
 }
 
 func TestValuesMethod(test *testing.T) {
@@ -154,7 +154,7 @@ func TestValuesMethod(test *testing.T) {
 	assert.Exactly(test, values[0], elementOne.Value, "Wrong extracted elements on Value method")
 	assert.Exactly(test, values[1], elementTwo.Value, "Wrong extracted elements on Value method")
 
-	assert.Len(test, values, dictionary.Count(), "Wrong get value elements in the dictionary on Values method")
+	assert.Len(test, values, dictionary.Size(), "Wrong get value elements in the dictionary on Values method")
 }
 
 func TestExtractMethod(test *testing.T) {
@@ -244,14 +244,14 @@ func TestContainsValueMethod(test *testing.T) {
 	assert.False(test, dictionary.ContainsValue(inexistentElement.Value), "ContainsValue return a false positive with inexistent elements")
 }
 
-func TestCountMethod(test *testing.T) {
+func TestSizeMethod(test *testing.T) {
 	dictionary := NewEmptyDictionary()
 
-	assert.Zero(test, dictionary.Count(), "Count method returns wrong size of collection when it's empty")
+	assert.Zero(test, dictionary.Size(), "Size method returns wrong size of collection when it's empty")
 
 	dictionary.Add("key", "value")
 
-	assert.NotZero(test, dictionary.Count(), "Count method returns 0 size when collection has elements")
+	assert.NotZero(test, dictionary.Size(), "Size method returns 0 size when collection has elements")
 }
 
 func TestIsEmptyMethod(test *testing.T) {

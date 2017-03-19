@@ -119,8 +119,8 @@ func (col *Collection) Delete(element Element) {
 
 	for index, current := range col.elements {
 		if reflect.DeepEqual(current, element) {
-			col.elements[index] = col.elements[col.Count()-1]
-			col.elements = col.elements[:col.Count()-1]
+			col.elements[index] = col.elements[col.Size()-1]
+			col.elements = col.elements[:col.Size()-1]
 
 			return
 		}
@@ -172,13 +172,13 @@ func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
 }
 
 // Returns the number of elements inside the collection
-func (col *Collection) Count() int {
+func (col *Collection) Size() int {
 	return len(col.elements)
 }
 
 // Checks if the collection is empty or not
 func (col *Collection) IsEmpty() bool {
-	return col.Count() == 0
+	return col.Size() == 0
 }
 
 func (col *Collection) isHomogeneousWith(element Element) bool {

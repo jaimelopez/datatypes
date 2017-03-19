@@ -252,14 +252,14 @@ func TestContainsAnyMethod(test *testing.T) {
 	assert.False(test, collection.ContainsAny(inexistentElements), "ContainsAny return a false positive with inexistent elements")
 }
 
-func TestCountMethod(test *testing.T) {
+func TestSizeMethod(test *testing.T) {
 	collection := NewEmptyCollection()
 
-	assert.Empty(test, collection.Count(), "Count method returns wrong size of collection when it's empty")
+	assert.Empty(test, collection.Size(), "Size method returns wrong size of collection when it's empty")
 
 	collection.Add("first element")
 
-	assert.NotZero(test, collection.Count(), "Count method returns 0 size when collection has elements")
+	assert.NotZero(test, collection.Size(), "Size method returns 0 size when collection has elements")
 }
 
 func TestIsEmptyMethod(test *testing.T) {

@@ -182,13 +182,13 @@ func (dic *Dictionary) ContainsValue(element ValueElement) bool {
 }
 
 // Returns the number of elements inside the dicionary
-func (dic *Dictionary) Count() int {
+func (dic *Dictionary) Size() int {
 	return len(dic.elements)
 }
 
 // Checks if the dictionary is empty or not
 func (dic *Dictionary) IsEmpty() bool {
-	return dic.Count() == 0
+	return dic.Size() == 0
 }
 
 func (dic *Dictionary) isHomogeneousWith(key KeyElement, value ValueElement) bool {
