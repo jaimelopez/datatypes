@@ -114,14 +114,14 @@ func TestExtractMethod(test *testing.T) {
 	elementOne := "first element"
 	elementTwo := "second element"
 
-	collection := NewCollection([]Element{elementOne, elementTwo})
+	collection := NewCollection(ElementList{elementOne, elementTwo})
 
 	firstElement := collection.Extract()
 
 	assert.Exactly(test, firstElement, elementOne, "Wrong extracted element on Extract method")
 	assert.Len(test, collection.elements, 1, "Wrong remained elements in the collection on Extract method")
 
-	newCollection := NewCollection([]Element{elementOne, elementTwo})
+	newCollection := NewCollection(ElementList{elementOne, elementTwo})
 	counter := 0
 
 	for !newCollection.IsEmpty() {

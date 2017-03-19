@@ -17,3 +17,7 @@ func ToSlice(slice interface{}) []interface{} {
 
 	return values
 }
+
+func AreSameType(first interface{}, second interface{}) bool {
+	return reflect.TypeOf(first) == reflect.TypeOf(second)
+}

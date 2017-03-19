@@ -26,3 +26,5 @@ func TestToSliceMethod(test *testing.T) {
 		ToSlice("non-iterable object")
 	}, "Non-iterable object does not return a panic")
 }
+
+func TestAreSameTypeMethod(test *testing.T) { /* @TODO */ }

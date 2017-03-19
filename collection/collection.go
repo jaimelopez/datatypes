@@ -6,6 +6,7 @@ import (
 )
 
 type Element interface{}
+type ElementList []Element
 type CollectionElements interface{}
 
 type Collection struct {
