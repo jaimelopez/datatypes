@@ -119,8 +119,7 @@ func (col *Collection) Delete(element Element) {
 
 	for index, current := range col.elements {
 		if reflect.DeepEqual(current, element) {
-			col.elements[index] = col.elements[col.Size()-1]
-			col.elements = col.elements[:col.Size()-1]
+			col.elements = append(col.elements[:index], col.elements[index+1:]...)
 
 			return
 		}

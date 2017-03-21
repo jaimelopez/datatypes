@@ -35,7 +35,6 @@ type Dictionary struct {
 	keyDefinition   reflect.Type
 	valueDefinition reflect.Type
 	elements        KeyValueMap
-	lasKeytElement  *KeyElement
 }
 
 // Adds a key-value element to the dictionary
@@ -57,7 +56,6 @@ func (dic *Dictionary) Add(key KeyElement, value ValueElement) {
 		NewDuplicatedKeyError()
 	}
 
-	dic.lasKeytElement = &key
 	dic.elements[key] = value
 }
 
@@ -72,20 +70,6 @@ func (dic *Dictionary) AddRange(elements KeyValueList) {
 	for _, element := range elements {
 		dic.AddKeyValueElement(element)
 	}
-}
-
-// Returns the first element without removing it from the collection
-func (dic *Dictionary) First() KeyValueElement {
-	for key, value := range dic.elements {
-		return KeyValueElement{key, value}
-	}
-
-	return KeyValueElement{}
-}
-
-// Returns the last element without removing it from the dictionary
-func (dic *Dictionary) Last() KeyValueElement {
-	return KeyValueElement{*dic.lasKeytElement, dic.elements[*dic.lasKeytElement]}
 }
 
 // Returns the specified key element in the dictionary
@@ -125,10 +109,15 @@ func (dic *Dictionary) Values() []ValueElement {
 // Extract the first element and return it
 // Keep in mind that this method will modify the dictionary elements substracting that element
 func (dic *Dictionary) Extract() KeyValueElement {
-	element := dic.First()
-	dic.Delete(element.Key)
+	for key, value := range dic.elements {
+		dic.Delete(key)
 
-	return element
+		return KeyValueElement{key, value}
+	}
+
+	NewEmptyDictionaryErrorString()
+
+	return KeyValueElement{}
 }
 
 // Extract the specified key element and return it

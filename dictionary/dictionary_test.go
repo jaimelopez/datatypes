@@ -71,35 +71,6 @@ func TestAddRangeMethod(test *testing.T) {
 	assert.Len(test, dictionay.elements, len(elementList), "Wrong behaviour adding a element range")
 }
 
-func TestFirstMethod(test *testing.T) {
-	elementOne := KeyValueElement{"1Key", "1Value"}
-	elementTwo := KeyValueElement{"2Key", "2Value"}
-
-	dictionary := NewDictionary(KeyValueList{elementOne, elementTwo})
-
-	first := dictionary.First()
-
-	assert.Exactly(test, first.Key, elementOne.Key, "First method do not return the correct element")
-	assert.Exactly(test, first.Value, elementOne.Value, "First method do not return the correct element")
-}
-
-func TestLastMethod(test *testing.T) {
-	elementOne := KeyValueElement{"1Key", "1Value"}
-	elementTwo := KeyValueElement{"2Key", "2Value"}
-	elementThree := KeyValueElement{"3Key", "3Value"}
-
-	dictionary := NewDictionary(KeyValueList{
-		elementOne,
-		elementTwo,
-		elementThree,
-	})
-
-	last := dictionary.Last()
-
-	assert.Exactly(test, last.Key, elementThree.Key, "Last method do not return the correct element")
-	assert.Exactly(test, last.Value, elementThree.Value, "Last method do not return the correct element")
-}
-
 func TestElementMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
 	elementTwo := KeyValueElement{"2Key", "2Value"}
@@ -136,8 +107,8 @@ func TestKeysMethod(test *testing.T) {
 
 	keys := dictionary.Keys()
 
-	assert.Exactly(test, keys[0], elementOne.Key, "Wrong extracted elements on Keys method")
-	assert.Exactly(test, keys[1], elementTwo.Key, "Wrong extracted elements on Keys method")
+	assert.Contains(test, keys, elementOne.Key, "Wrong extracted elements on Keys method")
+	assert.Contains(test, keys, elementTwo.Key, "Wrong extracted elements on Keys method")
 	assert.Len(test, keys, dictionary.Size(), "Wrong get value elements in the dictionary on Keys method")
 }
 
@@ -151,23 +122,23 @@ func TestValuesMethod(test *testing.T) {
 
 	values := dictionary.Values()
 
-	assert.Exactly(test, values[0], elementOne.Value, "Wrong extracted elements on Value method")
-	assert.Exactly(test, values[1], elementTwo.Value, "Wrong extracted elements on Value method")
+	assert.Contains(test, values, elementOne.Value, "Wrong extracted elements on Value method")
+	assert.Contains(test, values, elementTwo.Value, "Wrong extracted elements on Value method")
 
 	assert.Len(test, values, dictionary.Size(), "Wrong get value elements in the dictionary on Values method")
 }
 
 func TestExtractMethod(test *testing.T) {
-	elementOne := KeyValueElement{"1Key", "1Value"}
-	elementTwo := KeyValueElement{"2Key", "2Value"}
+	elements := KeyValueList{
+		KeyValueElement{"1Key", "1Value"},
+		KeyValueElement{"2Key", "2Value"},
+	}
 
-	dictionary := NewEmptyDictionary()
-	dictionary.AddKeyValueElement(elementOne)
-	dictionary.AddKeyValueElement(elementTwo)
+	dictionary := NewDictionary(elements)
 
 	extracted := dictionary.Extract()
 
-	assert.Exactly(test, extracted, elementOne, "Wrong extracted element on Extract method")
+	assert.Contains(test, elements, extracted, "Wrong extracted element on Extract method")
 	assert.Len(test, dictionary.elements, 1, "Wrong remained elements in the collection on Extract method")
 }
 
