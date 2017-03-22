@@ -1,4 +1,7 @@
 # datatypes
+[![Build Status](https://travis-ci.org/jaimelopez/datatypes.svg "Travis CI status")](https://travis-ci.org/jaimelopez/datatypes)
+[![GoDoc](https://godoc.org/github.com/jaimelopez/datatypes?status.svg)](https://godoc.org/github.com/jaimelopez/datatypes)
+
 GoLang package which provides new iterable structs to easy managing and extends some other basic functionalities.
 
 ## collection
