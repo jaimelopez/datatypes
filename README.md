@@ -108,3 +108,6 @@ fmt.Println(allKeys)
 ```
 
 \* [See tests for further more information about how play with it.](/dictionary/dictionary_test.go)
+
+# Roadmap
+ - In dictionaries: unify KeyValueList and KeyValueMap 
