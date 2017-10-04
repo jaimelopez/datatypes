@@ -11,6 +11,7 @@
 package collection
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -250,6 +251,26 @@ func TestContainsAnyMethod(test *testing.T) {
 
 	assert.True(test, collection.ContainsAny(elements), "ContainsAny return a false positive with existent elements")
 	assert.False(test, collection.ContainsAny(inexistentElements), "ContainsAny return a false positive with inexistent elements")
+}
+
+func TestFilterhMethod(test *testing.T) {
+	elementOne := "first element"
+	elementTwo := "second element"
+	elementThree := "third element"
+
+	collection := NewCollection(ElementList{
+		elementOne,
+		elementTwo,
+		elementThree,
+	})
+
+	matches := collection.Filter(func(elem Element) bool {
+		return strings.Contains(elem.(string), "second")
+	})
+
+	assert.Exactly(test, matches[0], elementTwo, "Wrong filtered elements!")
+	assert.NotContains(test, matches, elementOne, "Inapropiated element included in filtered results!")
+	assert.NotContains(test, matches, elementThree, "Inapropiated element included in filtered results!")
 }
 
 func TestSizeMethod(test *testing.T) {

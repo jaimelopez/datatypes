@@ -171,6 +171,22 @@ func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
 	return
 }
 
+// Returns a element colecction filtering the elements with a function
+// If the functions return true the element will be filtered
+func (col *Collection) Filter(f func(Element) bool) []Element {
+	var results []Element
+
+	for _, elem := range col.Elements() {
+		if !f(elem) {
+			continue
+		}
+
+		results = append(results, elem)
+	}
+
+	return results
+}
+
 // Returns the number of elements inside the collection
 func (col *Collection) Size() int {
 	return len(col.elements)
