@@ -11,6 +11,7 @@ package generic
 
 import "reflect"
 
+// ToSlice converts a non knowed type to slice
 func ToSlice(slice interface{}) []interface{} {
 	sliceValues := reflect.ValueOf(slice)
 
@@ -27,6 +28,7 @@ func ToSlice(slice interface{}) []interface{} {
 	return values
 }
 
+// AreSameType checks if two elements have the same type
 func AreSameType(first interface{}, second interface{}) bool {
 	return reflect.TypeOf(first) == reflect.TypeOf(second)
 }
