@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 // Package datatypes/dictionary provides an easy dictionary (key => value) homogeneous
-// struct management, making the iteration of a unique-key lists more powerfull,
+// struct management, making the iteration of a unique-key lists more powerful,
 // simple and clean, accepting primitives types and complex user structs as well.
 
 // This part of package contains the tests for the whole package
@@ -63,13 +63,13 @@ func TestAddRangeMethod(test *testing.T) {
 	elementTwo := KeyValueElement{"2Key", "2Value"}
 	elementList := KeyValueList{elementOne, elementTwo}
 
-	dictionay := NewEmptyDictionary()
+	dictionary := NewEmptyDictionary()
 
 	assert.NotPanics(test, func() {
-		dictionay.AddRange(elementList)
+		dictionary.AddRange(elementList)
 	}, "Wrong error returned adding a element range")
 
-	assert.Len(test, dictionay.elements, len(elementList), "Wrong behaviour adding a element range")
+	assert.Len(test, dictionary.elements, len(elementList), "Wrong behaviour adding a element range")
 }
 
 func TestElementMethod(test *testing.T) {

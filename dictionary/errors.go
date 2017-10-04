@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 // Package datatypes/dictionary provides an easy dictionary (key => value) homogeneous
-// struct management, making the iteration of a unique-key lists more powerfull,
+// struct management, making the iteration of a unique-key lists more powerful,
 // simple and clean, accepting primitives types and complex user structs as well.
 
 // This part of package contains the typped errors that the package uses

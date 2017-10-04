@@ -94,7 +94,7 @@ func (col *Collection) Elements() []Element {
 }
 
 // Extract the first element and return it
-// Keep in mind that this method will modify the collection elements substracting that element
+// Keep in mind that this method will modify the collection elements subtracting that element
 func (col *Collection) Extract() Element {
 	element := col.First()
 	col.elements = col.elements[1:]

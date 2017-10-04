@@ -28,7 +28,7 @@ func TestToSliceMethod(test *testing.T) {
 	}, "Iterable objects shouldn't return a panic")
 
 	if len(genericIterableObject) != len(slicedObject) {
-		test.Error("Invalid lenght in generic slice")
+		test.Error("Invalid length in generic slice")
 	}
 
 	assert.Panics(test, func() {

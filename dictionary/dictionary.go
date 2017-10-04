@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 // Package datatypes/dictionary provides an easy dictionary (key => value) homogeneous
-// struct management, making the iteration of a unique-key lists more powerfull,
+// struct management, making the iteration of a unique-key lists more powerful,
 // simple and clean, accepting primitives types and complex user structs as well.
 
 // This part of package contains the core behaviour
@@ -107,7 +107,7 @@ func (dic *Dictionary) Values() []ValueElement {
 }
 
 // Extract the first element and return it
-// Keep in mind that this method will modify the dictionary elements substracting that element
+// Keep in mind that this method will modify the dictionary elements subtracting that element
 func (dic *Dictionary) Extract() KeyValueElement {
 	for key, value := range dic.elements {
 		dic.Delete(key)
@@ -121,7 +121,7 @@ func (dic *Dictionary) Extract() KeyValueElement {
 }
 
 // Extract the specified key element and return it
-// Keep in mind that this method will modify the dictionary elements substracting that element
+// Keep in mind that this method will modify the dictionary elements subtracting that element
 func (dic *Dictionary) ExtractKey(key KeyElement) KeyValueElement {
 	element := KeyValueElement{key, dic.elements[key]}
 	dic.Delete(key)
