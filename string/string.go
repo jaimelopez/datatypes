@@ -11,12 +11,15 @@ package string
 
 import "strings"
 
+// Default string
 const Default string = ""
 
+// IsDefault check if string has a default value
 func IsDefault(str string) bool {
 	return str == Default
 }
 
+// IsEmpty checks if an string is empty or blank
 func IsEmpty(str string) bool {
 	return IsDefault(strings.Trim(str, " "))
 }

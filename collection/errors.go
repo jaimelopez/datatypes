@@ -15,7 +15,7 @@ import "fmt"
 // InvalidElementTypeErrorString represents an error for invalid element type
 const InvalidElementTypeErrorString = "Invalid element type: collection with %s types must to be homogeneous"
 
-// InvalidElementTypeErrorString represents an error for duplicated elements
+// DuplicatedElementErrorString represents an error for duplicated elements
 const DuplicatedElementErrorString = "Duplicated element in collection"
 
 // ElementNotFoundErrorString represents an error for not found elements
