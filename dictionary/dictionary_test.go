@@ -11,6 +11,7 @@
 package dictionary
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -213,6 +214,23 @@ func TestContainsValueMethod(test *testing.T) {
 
 	assert.True(test, dictionary.ContainsValue(elementOne.Value), "ContainsValue return a false positive with existent elements")
 	assert.False(test, dictionary.ContainsValue(inexistentElement.Value), "ContainsValue return a false positive with inexistent elements")
+}
+
+func TestFilterhMethod(test *testing.T) {
+	elementOne := KeyValueElement{"1Key", "1Value"}
+	elementTwo := KeyValueElement{"2Key", "2Value"}
+
+	dictionary := NewDictionary([]KeyValueElement{
+		elementOne,
+		elementTwo,
+	})
+
+	matches := dictionary.Filter(func(elem KeyValueElement) bool {
+		return strings.Contains(elem.Value.(string), "2")
+	})
+
+	assert.Exactly(test, matches[0], elementTwo, "Wrong filtered elements!")
+	assert.NotContains(test, matches, elementOne, "Inapropiated element included in filtered results!")
 }
 
 func TestSizeMethod(test *testing.T) {

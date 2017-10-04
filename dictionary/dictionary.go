@@ -170,6 +170,24 @@ func (dic *Dictionary) ContainsValue(element ValueElement) bool {
 	return false
 }
 
+// Returns a element colecction filtering the elements with a function
+// If the functions return true the element will be filtered
+func (dic *Dictionary) Filter(f func(KeyValueElement) bool) KeyValueList {
+	var results KeyValueList
+
+	for key, value := range dic.Elements() {
+		elem := KeyValueElement{key, value}
+
+		if !f(elem) {
+			continue
+		}
+
+		results = append(results, elem)
+	}
+
+	return results
+}
+
 // Returns the number of elements inside the dicionary
 func (dic *Dictionary) Size() int {
 	return len(dic.elements)
