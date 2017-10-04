@@ -24,19 +24,23 @@ const EmptyDictionaryErrorString = "Empty dictionary can not be iterable"
 // ElementNotFoundErrorString represents an error for non-found element
 const ElementNotFoundErrorString = "Element not found"
 
+// NewInvalidKeyValueElementTypeError error instance
 func NewInvalidKeyValueElementTypeError(keyType string, valueType string) {
 	message := fmt.Sprintf(InvalidKeyValueElementTypeErrorString, keyType, valueType)
 	panic(message)
 }
 
+// NewDuplicatedKeyError error instance
 func NewDuplicatedKeyError() {
 	panic(DuplicatedKeyErrorString)
 }
 
+// NewEmptyDictionaryErrorString error instance
 func NewEmptyDictionaryErrorString() {
 	panic(EmptyDictionaryErrorString)
 }
 
+// NewElementNotFoundError error instance
 func NewElementNotFoundError() {
 	panic(ElementNotFoundErrorString)
 }
