@@ -88,7 +88,7 @@ func (dic *Dictionary) Elements() KeyValueMap {
 func (dic *Dictionary) Keys() []KeyElement {
 	keys := []KeyElement{}
 
-	for current, _ := range dic.elements {
+	for current := range dic.elements {
 		keys = append(keys, current)
 	}
 

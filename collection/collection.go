@@ -16,25 +16,25 @@ import (
 	"github.com/jaimelopez/datatypes/generic"
 )
 
-// Generic element
+// Element represents a generic element
 type Element interface{}
 
-// A list of elements
+// ElementList represents a list of elements
 // elements := ElementList{"element1", "element2"}
 type ElementList []Element
 
-// Generic elements collection
+// CollectionElements is a generic elements collection
 // Used as parameter type in order to allow encapsulate any
 // kind of iterable object including ElementList as well
 type CollectionElements interface{}
 
-// Non-sorted unique element and homogeneous lists
+// Collection represents a non-sorted unique element and homogeneous lists
 type Collection struct {
 	definition reflect.Type
 	elements   []Element
 }
 
-// Adds a single element to the collection
+// Add a single element to the collection
 // The collection must to be homogeneous so the specified element
 // should be the same type such the other elements already stored in the collection.
 // If the collection is empty and has no elements, it will take the type of
@@ -55,7 +55,7 @@ func (col *Collection) Add(element Element) {
 	col.elements = append(col.elements, element)
 }
 
-// Inserts a range (slice) inside the collection
+// AddRange inserts a range (slice) inside the collection
 // If the parameter can't be converted to a iterable data type it's return an error
 func (col *Collection) AddRange(elements CollectionElements) {
 	for _, element := range generic.ToSlice(elements) {
@@ -63,22 +63,23 @@ func (col *Collection) AddRange(elements CollectionElements) {
 	}
 }
 
-// Adds the elements contained in the parameter collection inside the instanced collection
+// AddCollection adds the elements contained in the parameter collection inside the instanced collection
 // If the parameter can't be converted to a iterable data type it's return an error
 func (col *Collection) AddCollection(collection *Collection) {
 	col.AddRange(collection.elements)
 }
 
-// Returns the first element without removing it from the collection
+// First returns the first element without removing it from the collection
 func (col *Collection) First() Element {
 	return col.elements[0]
 }
 
-// Returns the last element without removing it from the collection
+// Last returns the last element without removing it from the collection
 func (col *Collection) Last() Element {
 	return col.elements[len(col.elements)-1]
 }
 
+// ElementAt returns the element in the specified position
 // Although a collection is an unsorted data structure list and the position
 // of the elements could be changed, this method allows to return an specific index position.
 // Be aware that the order of elements could be changed constantly such it's described before
@@ -86,7 +87,7 @@ func (col *Collection) ElementAt(position int) Element {
 	return col.elements[position]
 }
 
-// Returns the stored collection elements as slice of this elements
+// Elements returns the stored collection elements as slice of this elements
 // This is the proper way to iterate over all the elements of the collection
 // treating them as a normal range
 func (col *Collection) Elements() []Element {
@@ -102,7 +103,7 @@ func (col *Collection) Extract() Element {
 	return element
 }
 
-// Sets a new value for a specified index element
+// Set a new value for a specified index element
 func (col *Collection) Set(position int, element Element) {
 	if !col.isHomogeneousWith(element) {
 		NewInvalidElementTypeError(col.definition.Name())
@@ -111,7 +112,7 @@ func (col *Collection) Set(position int, element Element) {
 	col.elements[position] = element
 }
 
-// Removes an specified already stored element
+// Delete removes an specified already stored element
 // If it's not found the method will return an error
 func (col *Collection) Delete(element Element) {
 	if !col.isHomogeneousWith(element) {
@@ -129,7 +130,7 @@ func (col *Collection) Delete(element Element) {
 	NewElementNotFoundError()
 }
 
-// Removes all the found elements contained in the specified range (slice)
+// DeleteRange removes all the found elements contained in the specified range (slice)
 // If the parameter can't be converted to a iterable data type it's return an error
 func (col *Collection) DeleteRange(elements CollectionElements) {
 	for _, element := range generic.ToSlice(elements) {
@@ -137,13 +138,14 @@ func (col *Collection) DeleteRange(elements CollectionElements) {
 	}
 }
 
-// Removes all the found elements contained in the specified collection from the instaced collection
+// DeleteCollection removes all the found elements contained in the specified
+// collection from the instaced collection.
 // If the parameter can't be converted to a iterable data type it's return an error
 func (col *Collection) DeleteCollection(collection *Collection) {
 	col.DeleteRange(collection.elements)
 }
 
-// Checks if the specified element is already existing in the collection
+// Contains checks if the specified element is already existing in the collection
 func (col *Collection) Contains(element Element) bool {
 	for _, iterator := range col.elements {
 		if reflect.DeepEqual(iterator, element) {
@@ -154,7 +156,7 @@ func (col *Collection) Contains(element Element) bool {
 	return false
 }
 
-// Checks if any of the parameter elements there are already contained in the collection
+// ContainsAny checks if any of the parameter elements there are already contained in the collection
 func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
 	defer func() {
 		if recover() != nil {
@@ -171,7 +173,7 @@ func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
 	return
 }
 
-// Returns a element colecction filtering the elements with a function
+// Filter returns a element colecction filtering the elements with a function
 // If the functions return true the element will be filtered
 func (col *Collection) Filter(f func(Element) bool) []Element {
 	var results []Element
@@ -187,12 +189,12 @@ func (col *Collection) Filter(f func(Element) bool) []Element {
 	return results
 }
 
-// Returns the number of elements inside the collection
+// Size returns the number of elements inside the collection
 func (col *Collection) Size() int {
 	return len(col.elements)
 }
 
-// Checks if the collection is empty or not
+// IsEmpty checks if the collection is empty or not
 func (col *Collection) IsEmpty() bool {
 	return col.Size() == 0
 }
@@ -201,12 +203,12 @@ func (col *Collection) isHomogeneousWith(element Element) bool {
 	return col.definition == reflect.TypeOf(element)
 }
 
-// Instances a new empty collection
+// NewEmptyCollection instances a new empty collection
 func NewEmptyCollection() *Collection {
 	return new(Collection)
 }
 
-// This method allows to instance a new Collection with a group of elements
+// NewCollection allows to instance a new Collection with a group of elements
 // It accepts an enumerable
 func NewCollection(elements CollectionElements) (collection *Collection) {
 	collection = new(Collection)
