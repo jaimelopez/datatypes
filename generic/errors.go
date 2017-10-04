@@ -9,6 +9,7 @@
 
 package generic
 
+// InvalidIterableElement represents an error for non-iterable elements
 const InvalidIterableElement = "Non-iterable type can not be converted to slice"
 
 func NewInvalidIterableElementError() {

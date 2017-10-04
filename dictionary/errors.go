@@ -12,9 +12,16 @@ package dictionary
 
 import "fmt"
 
+// InvalidKeyValueElementTypeErrorString represents an error for invalid key-value type
 const InvalidKeyValueElementTypeErrorString = "Invalid key-value element type: dictionary must be homogeneous to %s-%s"
+
+// DuplicatedKeyErrorString represents an error for duplicated entries
 const DuplicatedKeyErrorString = "Duplicated key in dictionary"
+
+// EmptyDictionaryErrorString represents an error for non-iterable dictionaries
 const EmptyDictionaryErrorString = "Empty dictionary can not be iterable"
+
+// ElementNotFoundErrorString represents an error for non-found element
 const ElementNotFoundErrorString = "Element not found"
 
 func NewInvalidKeyValueElementTypeError(keyType string, valueType string) {
