@@ -173,7 +173,7 @@ func (dic *Dictionary) ContainsValue(element ValueElement) bool {
 // Filter returns a element colecction filtering the elements with a function
 // If the functions return true the element will be filtered
 func (dic *Dictionary) Filter(f func(KeyValueElement) bool) KeyValueMap {
-	var results KeyValueMap
+	results := make(KeyValueMap)
 
 	for key, value := range dic.Elements() {
 		elem := KeyValueElement{key, value}

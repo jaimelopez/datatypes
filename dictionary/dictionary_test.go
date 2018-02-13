@@ -229,8 +229,8 @@ func TestFilterhMethod(test *testing.T) {
 		return strings.Contains(elem.Value.(string), "2")
 	})
 
-	assert.Exactly(test, matches[0], elementTwo, "Wrong filtered elements!")
-	assert.NotContains(test, matches, elementOne, "Inapropiated element included in filtered results!")
+	assert.Exactly(test, matches[elementTwo.Key], elementTwo.Value, "Wrong filtered elements!")
+	assert.NotContains(test, matches, elementOne.Key, "Inapropiated element included in filtered results!")
 }
 
 func TestSizeMethod(test *testing.T) {
