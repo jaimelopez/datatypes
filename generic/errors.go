@@ -9,10 +9,7 @@
 
 package generic
 
-// InvalidIterableElement represents an error for non-iterable elements
-const InvalidIterableElement = "Non-iterable type can not be converted to slice"
+import "errors"
 
-// NewInvalidIterableElementError error instance
-func NewInvalidIterableElementError() {
-	panic(InvalidIterableElement)
-}
+// ErrInvalidIterableElement represents an error for non-iterable elements
+var ErrInvalidIterableElement = errors.New("Non-iterable type can not be converted to slice")

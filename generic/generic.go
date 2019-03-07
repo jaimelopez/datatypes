@@ -12,11 +12,11 @@ package generic
 import "reflect"
 
 // ToSlice converts a non knowed type to slice
-func ToSlice(slice interface{}) []interface{} {
+func ToSlice(slice interface{}) ([]interface{}, error) {
 	sliceValues := reflect.ValueOf(slice)
 
 	if sliceValues.Kind() != reflect.Slice {
-		NewInvalidIterableElementError()
+		return nil, ErrInvalidIterableElement
 	}
 
 	values := make([]interface{}, sliceValues.Len())
@@ -25,7 +25,7 @@ func ToSlice(slice interface{}) []interface{} {
 		values[x] = sliceValues.Index(x).Interface()
 	}
 
-	return values
+	return values, nil
 }
 
 // AreSameType checks if two elements have the same type

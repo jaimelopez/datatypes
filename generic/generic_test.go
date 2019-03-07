@@ -11,8 +11,6 @@ package generic
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestToSliceMethod(test *testing.T) {
@@ -20,20 +18,23 @@ func TestToSliceMethod(test *testing.T) {
 	elementTwo := "second element"
 
 	genericIterableObject := []string{elementOne, elementTwo}
+	slicedObject, err := ToSlice(genericIterableObject)
 
-	var slicedObject []interface{}
-
-	assert.NotPanics(test, func() {
-		slicedObject = ToSlice(genericIterableObject)
-	}, "Iterable objects shouldn't return a panic")
+	if err != nil {
+		test.Error("Iterable objects shouldn't return an error")
+	}
 
 	if len(genericIterableObject) != len(slicedObject) {
 		test.Error("Invalid length in generic slice")
 	}
 
-	assert.Panics(test, func() {
-		ToSlice("non-iterable object")
-	}, "Non-iterable object does not return a panic")
+	nonIterableSlicedObject, err := ToSlice("non-iterable object")
+
+	if nonIterableSlicedObject != nil {
+		test.Error("Non-iterable object should return nil")
+	} else if err == nil {
+		test.Error("Non-iterable object should return an error")
+	}
 }
 
 func TestAreSameTypeMethod(test *testing.T) { /* @TODO */ }
