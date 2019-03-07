@@ -19,14 +19,10 @@ import (
 // Element represents a generic element
 type Element interface{}
 
-// ElementList represents a list of elements
-// elements := ElementList{"element1", "element2"}
-type ElementList []Element
-
-// CollectionElements is a generic elements collection
+// ElementList is a generic elements collection
 // Used as parameter type in order to allow encapsulate any
-// kind of iterable object including ElementList as well
-type CollectionElements interface{}
+// kind of iterable object including []Element as well
+type ElementList interface{}
 
 // Collection represents a non-sorted unique element and homogeneous lists
 type Collection struct {
@@ -39,34 +35,46 @@ type Collection struct {
 // should be the same type such the other elements already stored in the collection.
 // If the collection is empty and has no elements, it will take the type of
 // that element as type definition for the collection
-func (col *Collection) Add(element Element) {
+func (col *Collection) Add(element Element) error {
 	if col.IsEmpty() {
 		col.definition = reflect.TypeOf(element)
-	}
-
-	if !col.isHomogeneousWith(element) {
-		NewInvalidElementTypeError(col.definition.Name())
+	} else if !col.isHomogeneousWith(element) {
+		return ErrInvalidElementType
 	}
 
 	if col.Contains(element) {
-		NewDuplicatedElementError()
+		return ErrDuplicatedElement
 	}
 
 	col.elements = append(col.elements, element)
+
+	return nil
 }
 
 // AddRange inserts a range (slice) inside the collection
 // If the parameter can't be converted to a iterable data type it's return an error
-func (col *Collection) AddRange(elements CollectionElements) {
-	for _, element := range generic.ToSlice(elements) {
-		col.Add(element)
+func (col *Collection) AddRange(elements ElementList) error {
+	slice, err := generic.ToSlice(elements)
+
+	if err != nil {
+		return err
 	}
+
+	for _, element := range slice {
+		err = col.Add(element)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // AddCollection adds the elements contained in the parameter collection inside the instanced collection
 // If the parameter can't be converted to a iterable data type it's return an error
-func (col *Collection) AddCollection(collection *Collection) {
-	col.AddRange(collection.elements)
+func (col *Collection) AddCollection(collection *Collection) error {
+	return col.AddRange(collection.elements)
 }
 
 // First returns the first element without removing it from the collection
@@ -104,45 +112,57 @@ func (col *Collection) Extract() Element {
 }
 
 // Set a new value for a specified index element
-func (col *Collection) Set(position int, element Element) {
+func (col *Collection) Set(position int, element Element) error {
 	if !col.isHomogeneousWith(element) {
-		NewInvalidElementTypeError(col.definition.Name())
+		return ErrInvalidElementType
 	}
 
 	col.elements[position] = element
+
+	return nil
 }
 
 // Delete removes an specified already stored element
 // If it's not found the method will return an error
-func (col *Collection) Delete(element Element) {
+func (col *Collection) Delete(element Element) error {
 	if !col.isHomogeneousWith(element) {
-		NewInvalidElementTypeError(col.definition.Name())
+		return ErrInvalidElementType
 	}
 
 	for index, current := range col.elements {
 		if reflect.DeepEqual(current, element) {
 			col.elements = append(col.elements[:index], col.elements[index+1:]...)
 
-			return
+			return nil
 		}
 	}
 
-	NewElementNotFoundError()
+	return ErrElementNotFound
 }
 
 // DeleteRange removes all the found elements contained in the specified range (slice)
 // If the parameter can't be converted to a iterable data type it's return an error
-func (col *Collection) DeleteRange(elements CollectionElements) {
-	for _, element := range generic.ToSlice(elements) {
-		col.Delete(element)
+func (col *Collection) DeleteRange(elements ElementList) error {
+	slice, err := generic.ToSlice(elements)
+
+	if err != nil {
+		return err
 	}
+
+	for _, element := range slice {
+		if err = col.Delete(element); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // DeleteCollection removes all the found elements contained in the specified
 // collection from the instaced collection.
 // If the parameter can't be converted to a iterable data type it's return an error
-func (col *Collection) DeleteCollection(collection *Collection) {
-	col.DeleteRange(collection.elements)
+func (col *Collection) DeleteCollection(collection *Collection) error {
+	return col.DeleteRange(collection.elements)
 }
 
 // Contains checks if the specified element is already existing in the collection
@@ -157,20 +177,20 @@ func (col *Collection) Contains(element Element) bool {
 }
 
 // ContainsAny checks if any of the parameter elements there are already contained in the collection
-func (col *Collection) ContainsAny(elements CollectionElements) (result bool) {
-	defer func() {
-		if recover() != nil {
-			result = false
-		}
-	}()
+func (col *Collection) ContainsAny(elements ElementList) bool {
+	slice, err := generic.ToSlice(elements)
 
-	for _, element := range generic.ToSlice(elements) {
+	if err != nil {
+		return false
+	}
+
+	for _, element := range slice {
 		if col.Contains(element) {
 			return true
 		}
 	}
 
-	return
+	return false
 }
 
 // Filter returns a element colecction filtering the elements with a function
@@ -210,16 +230,14 @@ func NewEmptyCollection() *Collection {
 
 // NewCollection allows to instance a new Collection with a group of elements
 // It accepts an enumerable
-func NewCollection(elements CollectionElements) (collection *Collection) {
-	collection = new(Collection)
+func NewCollection(elements ElementList) *Collection {
+	collection := new(Collection)
 
-	defer func(collection *Collection) {
-		if recover() != nil {
-			collection.Add(elements)
-		}
-	}(collection)
+	err := collection.AddRange(elements)
 
-	collection.AddRange(elements)
+	if err != nil {
+		collection.Add(elements)
+	}
 
-	return
+	return collection
 }

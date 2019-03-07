@@ -21,17 +21,17 @@ func TestAddMethod(test *testing.T) {
 	element := "first element"
 	collection := NewEmptyCollection()
 
-	assert.NotPanics(test, func() {
-		collection.Add(element)
-	}, "Wrong behaviour adding a element: bad error")
+	if collection.Add(element) != nil {
+		test.Error("Wrong behaviour adding a element: bad error")
+	}
 
 	if len(collection.elements) != 1 || collection.elements[0] != element {
 		test.Error("Wrong behaviour adding a element")
 	}
 
-	assert.Panics(test, func() {
-		collection.Add(element)
-	}, "Duplicated keys should return an error on Add method")
+	if collection.Add(element) != ErrDuplicatedElement {
+		test.Error("Duplicated keys should return an error on Add method")
+	}
 }
 
 func TestAddRangeMethod(test *testing.T) {
@@ -39,9 +39,9 @@ func TestAddRangeMethod(test *testing.T) {
 
 	collection := NewEmptyCollection()
 
-	assert.NotPanics(test, func() {
-		collection.AddRange(newElements)
-	}, "Wrong error returned adding a element range")
+	if collection.AddRange(newElements) != nil {
+		test.Error("Wrong error returned adding a element range")
+	}
 
 	assert.Equal(test,
 		len(collection.elements),
@@ -50,9 +50,9 @@ func TestAddRangeMethod(test *testing.T) {
 
 	invalidRange := "simple string"
 
-	assert.Panics(test, func() {
-		collection.AddRange(invalidRange)
-	}, "Method should return an InvalidIterableElement error adding an invalid range")
+	if collection.AddRange(invalidRange) == nil {
+		test.Error("Method should return an InvalidIterableElement error adding an invalid range")
+	}
 }
 
 func TestAddCollectionMethod(test *testing.T) {
@@ -67,9 +67,9 @@ func TestAddCollectionMethod(test *testing.T) {
 	otherCollection.Add(elementTwo)
 	otherCollection.Add(elementThree)
 
-	assert.NotPanics(test, func() {
-		collection.AddCollection(otherCollection)
-	}, "Unexpected error adding a collection to another collection")
+	if collection.AddCollection(otherCollection) != nil {
+		test.Error("Unexpected error adding a collection to another collection")
+	}
 
 	assert.Len(test, collection.elements, 3, "Wrong elements number adding a collection to another collection")
 }
@@ -127,14 +127,14 @@ func TestExtractMethod(test *testing.T) {
 	elementOne := "first element"
 	elementTwo := "second element"
 
-	collection := NewCollection(ElementList{elementOne, elementTwo})
+	collection := NewCollection([]Element{elementOne, elementTwo})
 
 	firstElement := collection.Extract()
 
 	assert.Exactly(test, firstElement, elementOne, "Wrong extracted element on Extract method")
 	assert.Len(test, collection.elements, 1, "Wrong remained elements in the collection on Extract method")
 
-	newCollection := NewCollection(ElementList{elementOne, elementTwo})
+	newCollection := NewCollection([]Element{elementOne, elementTwo})
 	counter := 0
 
 	for !newCollection.IsEmpty() {
@@ -170,9 +170,9 @@ func TestDeleteMethod(test *testing.T) {
 		elementThree,
 	})
 
-	assert.NotPanics(test, func() {
-		collection.Delete(elementTwo)
-	}, "Unexpected error delenting an element")
+	if collection.Delete(elementTwo) != nil {
+		test.Error("Unexpected error delenting an element")
+	}
 
 	assert.Len(test, collection.elements, 2, "Invalid number of elements after a element deletion")
 
@@ -186,16 +186,16 @@ func TestDeleteRangeMethod(test *testing.T) {
 	elementThree := "third element"
 	elementFour := "fourth element"
 
-	collection := NewCollection(ElementList{
+	collection := NewCollection([]Element{
 		elementOne,
 		elementTwo,
 		elementThree,
 		elementFour,
 	})
 
-	assert.NotPanics(test, func() {
-		collection.DeleteRange([]string{elementOne, elementThree})
-	}, "Unexpected error delenting a range elements")
+	if collection.DeleteRange([]string{elementOne, elementThree}) != nil {
+		test.Error("Unexpected error delenting a range elements")
+	}
 
 	assert.Len(test, collection.elements, 2, "Wrong elements number deleting  a collection to another collection")
 
@@ -216,13 +216,14 @@ func TestDeleteCollectionMethod(test *testing.T) {
 		elementThree,
 	})
 
-	otherCollection := NewEmptyCollection()
-	otherCollection.Add(elementOne)
-	otherCollection.Add(elementThree)
+	otherCollection := NewCollection([]Element{
+		elementOne,
+		elementThree,
+	})
 
-	assert.NotPanics(test, func() {
-		collection.DeleteCollection(otherCollection)
-	}, "Unexpected error deleting a collection from another collection")
+	if collection.DeleteCollection(otherCollection) != nil {
+		test.Error("Unexpected error deleting a collection from another collection")
+	}
 
 	assert.Len(test, collection.elements, 1, "Wrong elements number deleting a collection from another collection")
 	assert.Exactly(test, collection.elements[0], elementTwo, "Wrong elements number deleting a collection from another collection")
@@ -258,7 +259,7 @@ func TestFilterhMethod(test *testing.T) {
 	elementTwo := "second element"
 	elementThree := "third element"
 
-	collection := NewCollection(ElementList{
+	collection := NewCollection([]Element{
 		elementOne,
 		elementTwo,
 		elementThree,

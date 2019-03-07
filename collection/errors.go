@@ -10,29 +10,13 @@
 
 package collection
 
-import "fmt"
+import "errors"
 
-// InvalidElementTypeErrorString represents an error for invalid element type
-const InvalidElementTypeErrorString = "Invalid element type: collection with %s types must to be homogeneous"
+// ErrInvalidElementType represents an error for invalid element type
+var ErrInvalidElementType = errors.New("Invalid element type: collection must to be homogeneous")
 
-// DuplicatedElementErrorString represents an error for duplicated elements
-const DuplicatedElementErrorString = "Duplicated element in collection"
+// ErrDuplicatedElement represents an error for duplicated elements
+var ErrDuplicatedElement = errors.New("Duplicated element in collection")
 
-// ElementNotFoundErrorString represents an error for not found elements
-const ElementNotFoundErrorString = "Element not found"
-
-// NewInvalidElementTypeError error instance
-func NewInvalidElementTypeError(collectionType string) {
-	message := fmt.Sprintf(InvalidElementTypeErrorString, collectionType)
-	panic(message)
-}
-
-// NewDuplicatedElementError error instance
-func NewDuplicatedElementError() {
-	panic(DuplicatedElementErrorString)
-}
-
-// NewElementNotFoundError error instance
-func NewElementNotFoundError() {
-	panic(ElementNotFoundErrorString)
-}
+// ErrElementNotFound represents an error for not found elements
+var ErrElementNotFound = errors.New("Element not found")

@@ -125,7 +125,6 @@ func TestValuesMethod(test *testing.T) {
 
 	assert.Contains(test, values, elementOne.Value, "Wrong extracted elements on Value method")
 	assert.Contains(test, values, elementTwo.Value, "Wrong extracted elements on Value method")
-
 	assert.Len(test, values, dictionary.Size(), "Wrong get value elements in the dictionary on Values method")
 }
 
