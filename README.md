@@ -64,7 +64,7 @@ import "github.com/jaimelopez/datatypes/dictionary"
 elementOne := KeyValueElement{"1Key", "1Value"}
 elementTwo := KeyValueElement{"2Key", "2Value"}
 
-dic := NewDictionary(KeyValueList{elementOne, elementTwo})
+dic := NewDictionary([]KeyValueElement{elementOne, elementTwo})
 
 first := dic.First()
 
@@ -94,9 +94,10 @@ Getting all stored keys:
 ```go
 import "github.com/jaimelopez/datatypes/dictionary"
 
-elementOne := KeyValueElement{"1Key", "1Value"}
-elementTwo := KeyValueElement{"2Key", "2Value"}
-elementList := KeyValueList{elementOne, elementTwo}
+elementList := []KeyValueElement{
+    KeyValueElement{"1Key", "1Value"},
+    KeyValueElement{"2Key", "2Value"}
+}
 
 dic := NewEmptyDictionary()
 dic.AddRange(elementList)
@@ -108,6 +109,3 @@ fmt.Println(allKeys)
 ```
 
 \* [See tests for further more information about how play with it.](/dictionary/dictionary_test.go)
-
-# Roadmap
- - In dictionaries: unify KeyValueList and KeyValueMap 
