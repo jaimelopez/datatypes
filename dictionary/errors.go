@@ -10,37 +10,16 @@
 
 package dictionary
 
-import "fmt"
+import "errors"
 
-// InvalidKeyValueElementTypeErrorString represents an error for invalid key-value type
-const InvalidKeyValueElementTypeErrorString = "Invalid key-value element type: dictionary must be homogeneous to %s-%s"
+// ErrInvalidKeyValueElementType represents an error for invalid key-value type
+var ErrInvalidKeyValueElementType = errors.New("Invalid key-value element type: dictionary must be homogeneous")
 
-// DuplicatedKeyErrorString represents an error for duplicated entries
-const DuplicatedKeyErrorString = "Duplicated key in dictionary"
+// ErrDuplicatedKey represents an error for duplicated entries
+var ErrDuplicatedKey = errors.New("Duplicated key in dictionary")
 
-// EmptyDictionaryErrorString represents an error for non-iterable dictionaries
-const EmptyDictionaryErrorString = "Empty dictionary can not be iterable"
+// ErrEmptyDictionary represents an error for non-iterable dictionaries
+var ErrEmptyDictionary = errors.New("Empty dictionary can not be iterable")
 
-// ElementNotFoundErrorString represents an error for non-found element
-const ElementNotFoundErrorString = "Element not found"
-
-// NewInvalidKeyValueElementTypeError error instance
-func NewInvalidKeyValueElementTypeError(keyType string, valueType string) {
-	message := fmt.Sprintf(InvalidKeyValueElementTypeErrorString, keyType, valueType)
-	panic(message)
-}
-
-// NewDuplicatedKeyError error instance
-func NewDuplicatedKeyError() {
-	panic(DuplicatedKeyErrorString)
-}
-
-// NewEmptyDictionaryErrorString error instance
-func NewEmptyDictionaryErrorString() {
-	panic(EmptyDictionaryErrorString)
-}
-
-// NewElementNotFoundError error instance
-func NewElementNotFoundError() {
-	panic(ElementNotFoundErrorString)
-}
+// ErrElementNotFound represents an error for non-found element
+var ErrElementNotFound = errors.New("Element not found")

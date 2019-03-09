@@ -24,9 +24,6 @@ type KeyValueElement struct {
 	Value ValueElement
 }
 
-// KeyValueList represents a list of Key-Value elements
-type KeyValueList []KeyValueElement
-
 // KeyValueMap represents a map of Key-Vale elements
 type KeyValueMap map[KeyElement]ValueElement
 
@@ -42,46 +39,56 @@ type Dictionary struct {
 // should be the same type such the other elements already stored in the dictionary.
 // If the dictionary is empty and have no elements, it will take the type of
 // the first element as type definition
-func (dic *Dictionary) Add(key KeyElement, value ValueElement) {
+func (dic *Dictionary) Add(key KeyElement, value ValueElement) error {
 	if dic.IsEmpty() {
 		dic.keyDefinition = reflect.TypeOf(key)
 		dic.valueDefinition = reflect.TypeOf(value)
-	}
-
-	if !dic.isHomogeneousWith(key, value) {
-		NewInvalidKeyValueElementTypeError(dic.keyDefinition.Name(), dic.valueDefinition.Name())
+	} else if !dic.isHomogeneousWith(key, value) {
+		return ErrInvalidKeyValueElementType
 	}
 
 	if dic.Contains(key) {
-		NewDuplicatedKeyError()
+		return ErrDuplicatedKey
 	}
 
 	dic.elements[key] = value
+
+	return nil
 }
 
 // AddKeyValueElement adds an composed element KeyValueElement to the dictionary
-func (dic *Dictionary) AddKeyValueElement(element KeyValueElement) {
-	dic.Add(element.Key, element.Value)
+func (dic *Dictionary) AddKeyValueElement(element KeyValueElement) error {
+	return dic.Add(element.Key, element.Value)
 }
 
 // AddRange inserts a range (slice) of KeyValueElement inside the dictionary
 // If the parameter can't be converted to a iterable data type it's return an error
-func (dic *Dictionary) AddRange(elements KeyValueList) {
+func (dic *Dictionary) AddRange(elements []KeyValueElement) error {
 	for _, element := range elements {
-		dic.AddKeyValueElement(element)
+		if err := dic.AddKeyValueElement(element); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 // Element returns the specified key element in the dictionary
-func (dic *Dictionary) Element(key KeyElement) KeyValueElement {
-	return KeyValueElement{key, dic.elements[key]}
+func (dic *Dictionary) Element(key KeyElement) (*ValueElement, error) {
+	element, exists := dic.elements[key]
+
+	if !exists {
+		return nil, ErrElementNotFound
+	}
+
+	return &element, nil
 }
 
 // Elements returns the stored elements as slice of this elements
 // This is the proper way to iterate over all the elements inside de dicionary
 // treating them as a normal range
-func (dic *Dictionary) Elements() KeyValueMap {
-	return dic.elements
+func (dic *Dictionary) Elements() *KeyValueMap {
+	return &dic.elements
 }
 
 // Keys returns all the keys in the dicionary as a list of KeyElement
@@ -108,48 +115,54 @@ func (dic *Dictionary) Values() []ValueElement {
 
 // Extract the first element and return it
 // Keep in mind that this method will modify the dictionary elements subtracting that element
-func (dic *Dictionary) Extract() KeyValueElement {
+func (dic *Dictionary) Extract() *KeyValueElement {
 	for key, value := range dic.elements {
 		dic.Delete(key)
 
-		return KeyValueElement{key, value}
+		return &KeyValueElement{key, value}
 	}
 
-	NewEmptyDictionaryErrorString()
-
-	return KeyValueElement{}
+	return nil
 }
 
 // ExtractKey extracts the specified key element and return it
 // Keep in mind that this method will modify the dictionary elements subtracting that element
-func (dic *Dictionary) ExtractKey(key KeyElement) KeyValueElement {
-	element := KeyValueElement{key, dic.elements[key]}
-	dic.Delete(key)
+func (dic *Dictionary) ExtractKey(key KeyElement) (*KeyValueElement, error) {
+	if dic.Contains(key) {
+		element := &KeyValueElement{key, dic.elements[key]}
+		dic.Delete(key)
 
-	return element
+		return element, nil
+	}
+
+	return nil, ErrElementNotFound
 }
 
 // Set a new value for a specified index element
-func (dic *Dictionary) Set(key KeyElement, value ValueElement) {
+func (dic *Dictionary) Set(key KeyElement, value ValueElement) error {
 	if !dic.isHomogeneousWith(key, value) {
-		NewInvalidKeyValueElementTypeError(dic.keyDefinition.Name(), dic.valueDefinition.Name())
+		return ErrInvalidKeyValueElementType
 	}
 
 	if !dic.Contains(key) {
-		NewElementNotFoundError()
+		return ErrElementNotFound
 	}
 
 	dic.elements[key] = value
+
+	return nil
 }
 
 // Delete an specified already stored element
 // If it's not found the method will return an error
-func (dic *Dictionary) Delete(key KeyElement) {
+func (dic *Dictionary) Delete(key KeyElement) error {
 	if !dic.Contains(key) {
-		NewElementNotFoundError()
+		return ErrElementNotFound
 	}
 
 	delete(dic.elements, key)
+
+	return nil
 }
 
 // Contains checks if the specified key element is already existing in the dictionary
@@ -172,10 +185,10 @@ func (dic *Dictionary) ContainsValue(element ValueElement) bool {
 
 // Filter returns a element colecction filtering the elements with a function
 // If the functions return true the element will be filtered
-func (dic *Dictionary) Filter(f func(KeyValueElement) bool) KeyValueMap {
+func (dic *Dictionary) Filter(f func(KeyValueElement) bool) *KeyValueMap {
 	results := make(KeyValueMap)
 
-	for key, value := range dic.Elements() {
+	for key, value := range *dic.Elements() {
 		elem := KeyValueElement{key, value}
 
 		if !f(elem) {
@@ -185,7 +198,7 @@ func (dic *Dictionary) Filter(f func(KeyValueElement) bool) KeyValueMap {
 		results[key] = value
 	}
 
-	return results
+	return &results
 }
 
 // Size returns the number of elements inside the dicionary
@@ -212,9 +225,9 @@ func NewEmptyDictionary() *Dictionary {
 }
 
 // NewDictionary allows to instance a new Dictionary with a group of key-value elements
-func NewDictionary(elements KeyValueList) *Dictionary {
+func NewDictionary(elements []KeyValueElement) (*Dictionary, error) {
 	dictionary := NewEmptyDictionary()
-	dictionary.AddRange(elements)
+	err := dictionary.AddRange(elements)
 
-	return dictionary
+	return dictionary, err
 }

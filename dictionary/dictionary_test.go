@@ -20,25 +20,16 @@ import (
 func TestAddMethod(test *testing.T) {
 	keyElement := "key"
 	valueElement := "value"
+	nonHomogeneousKeyElement := 1
+	nonHomogeneousKeyValue := 2
 
 	dictionary := NewEmptyDictionary()
 
-	assert.NotPanics(test, func() {
-		dictionary.Add(keyElement, valueElement)
-	}, "Unexpected error adding a element")
-
+	assert.Nil(test, dictionary.Add(keyElement, valueElement), "Unexpected error adding a element")
 	assert.Len(test, dictionary.elements, 1, "Wrong behaviour adding a element")
 	assert.Exactly(test, dictionary.elements[keyElement], valueElement, "Wrong behaviour adding a element")
-
-	assert.Panics(test, func() {
-		dictionary.Add(keyElement, valueElement)
-	}, "Duplicated keys should return an error on Add method")
-
-	differentTypeKeyElement, differentTypeValueElement := 1, 2
-
-	assert.Panics(test, func() {
-		dictionary.Add(differentTypeKeyElement, differentTypeValueElement)
-	}, "Add method should throw an exception trying to insert a non-homogeneous elements")
+	assert.Error(test, dictionary.Add(keyElement, valueElement), ErrDuplicatedKey, "Duplicated keys should return an error on Add method")
+	assert.Error(test, dictionary.Add(nonHomogeneousKeyElement, nonHomogeneousKeyValue), ErrInvalidKeyValueElementType, "Add method should throw an exception trying to insert a non-homogeneous elements")
 }
 
 func TestAddKeyValueElementMethod(test *testing.T) {
@@ -46,29 +37,21 @@ func TestAddKeyValueElementMethod(test *testing.T) {
 
 	dictionary := NewEmptyDictionary()
 
-	assert.NotPanics(test, func() {
-		dictionary.AddKeyValueElement(element)
-	}, "Unexpected error adding a KeyValueElement")
-
+	assert.Nil(test, dictionary.AddKeyValueElement(element), "Unexpected error adding a KeyValueElement")
 	assert.Len(test, dictionary.elements, 1, "Wrong behaviour adding a KeyValueElement")
 	assert.Exactly(test, dictionary.elements[element.Key], element.Value, "Wrong behaviour adding a KeyValueElement")
-
-	assert.Panics(test, func() {
-		dictionary.AddKeyValueElement(element)
-	}, "Duplicated keys should return an error on AddKeyValueElement method")
+	assert.Error(test, dictionary.AddKeyValueElement(element), ErrDuplicatedKey, "Duplicated keys should return an error on AddKeyValueElement method")
 }
 
 func TestAddRangeMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
 	elementTwo := KeyValueElement{"2Key", "2Value"}
-	elementList := KeyValueList{elementOne, elementTwo}
+	elementList := []KeyValueElement{elementOne, elementTwo}
 
 	dictionary := NewEmptyDictionary()
+	result := dictionary.AddRange(elementList)
 
-	assert.NotPanics(test, func() {
-		dictionary.AddRange(elementList)
-	}, "Wrong error returned adding a element range")
-
+	assert.Nil(test, result, "Wrong error returned adding a element range")
 	assert.Len(test, dictionary.elements, len(elementList), "Wrong behaviour adding a element range")
 }
 
@@ -76,10 +59,14 @@ func TestElementMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
 	elementTwo := KeyValueElement{"2Key", "2Value"}
 
-	dictionary := NewDictionary(KeyValueList{elementOne, elementTwo})
+	dictionary, _ := NewDictionary([]KeyValueElement{elementOne, elementTwo})
+	retrievedElementOne, err1 := dictionary.Element(elementOne.Key)
+	retrievedElementTwo, err2 := dictionary.Element(elementTwo.Key)
 
-	assert.Exactly(test, dictionary.Element(elementOne.Key), elementOne, "Wrong returned element in specific position on Element method")
-	assert.Exactly(test, dictionary.Element(elementTwo.Key), elementTwo, "Wrong returned element in specific position on Element method")
+	assert.Exactly(test, *retrievedElementOne, elementOne.Value, "Wrong returned element in specific position on Element method")
+	assert.Nil(test, err1, "Error returned retrieving element in specific position on Element method")
+	assert.Exactly(test, *retrievedElementTwo, elementTwo.Value, "Wrong returned element in specific position on Element method")
+	assert.Nil(test, err2, "Error returned retrieving element in specific position on Element method")
 }
 
 func TestElementsMethod(test *testing.T) {
@@ -93,9 +80,11 @@ func TestElementsMethod(test *testing.T) {
 	dictionary.AddKeyValueElement(elementOne)
 	dictionary.AddKeyValueElement(elementTwo)
 
+	elements := *dictionary.Elements()
+
 	assert.NotEmpty(test, dictionary.Elements(), "Elements method do not return the correct stored elements in the collection")
-	assert.Equal(test, dictionary.Elements()[elementOne.Key], elementOne.Value, "Elements method do not return the correct stored elements in the collection")
-	assert.Equal(test, dictionary.Elements()[elementTwo.Key], elementTwo.Value, "Elements method do not return the correct stored elements in the collection")
+	assert.Equal(test, elements[elementOne.Key], elementOne.Value, "Elements method do not return the correct stored elements in the collection")
+	assert.Equal(test, elements[elementTwo.Key], elementTwo.Value, "Elements method do not return the correct stored elements in the collection")
 }
 
 func TestKeysMethod(test *testing.T) {
@@ -129,14 +118,13 @@ func TestValuesMethod(test *testing.T) {
 }
 
 func TestExtractMethod(test *testing.T) {
-	elements := KeyValueList{
+	elements := []KeyValueElement{
 		KeyValueElement{"1Key", "1Value"},
 		KeyValueElement{"2Key", "2Value"},
 	}
 
-	dictionary := NewDictionary(elements)
-
-	extracted := dictionary.Extract()
+	dictionary, _ := NewDictionary(elements)
+	extracted := *dictionary.Extract()
 
 	assert.Contains(test, elements, extracted, "Wrong extracted element on Extract method")
 	assert.Len(test, dictionary.elements, 1, "Wrong remained elements in the collection on Extract method")
@@ -146,12 +134,17 @@ func TestExtractKeyMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
 	elementTwo := KeyValueElement{"2Key", "2Value"}
 
-	dictionary := NewDictionary(KeyValueList{elementOne, elementTwo})
+	dictionary, _ := NewDictionary([]KeyValueElement{elementOne, elementTwo})
+	extracted, err := dictionary.ExtractKey("2Key")
 
-	extracted := dictionary.ExtractKey("2Key")
-
-	assert.Exactly(test, extracted, elementTwo, "Wrong extracted element on ExtractKey method")
+	assert.Nil(test, err, "Wrong returned error on ExtractKey method")
+	assert.Exactly(test, *extracted, elementTwo, "Wrong extracted element on ExtractKey method")
 	assert.Len(test, dictionary.elements, 1, "Wrong remained elements in the collection on ExtractKey method")
+
+	extracted, err = dictionary.ExtractKey("notFoundKey")
+
+	assert.EqualError(test, err, ErrElementNotFound.Error(), "Element not found error should be return when extracting invalid element on ExtractKey method")
+	assert.Nil(test, extracted, "Nil should be returned as element when extracting invalid element on ExtractKey method")
 }
 
 func TestSetMethod(test *testing.T) {
@@ -159,13 +152,12 @@ func TestSetMethod(test *testing.T) {
 	elementTwo := KeyValueElement{"key2", "value2"}
 	elementTwoNewValue := "newValue2"
 
-	dictionary := NewDictionary(KeyValueList{elementOne, elementTwo})
-	dictionary.Set(elementTwo.Key, elementTwoNewValue)
+	dictionary, _ := NewDictionary([]KeyValueElement{elementOne, elementTwo})
+	result := dictionary.Set(elementTwo.Key, elementTwoNewValue)
 
-	newElement := dictionary.Element(elementTwo.Key)
-
-	assert.Exactly(test, newElement.Value, elementTwoNewValue, "Set method doesn't works properly")
-	assert.NotEqual(test, newElement, elementTwo, "Set method doesn't works properly")
+	assert.Nil(test, result, "Set method returned non expected error")
+	assert.Exactly(test, dictionary.elements[elementTwo.Key], elementTwoNewValue, "Set method doesn't works properly")
+	assert.NotEqual(test, dictionary.elements[elementTwo.Key], elementTwo.Value, "Set method doesn't works properly")
 	assert.Len(test, dictionary.elements, 2, "Set method doesn't mantains the right items")
 }
 
@@ -174,19 +166,19 @@ func TestDeleteMethod(test *testing.T) {
 	elementTwo := KeyValueElement{"2Key", "2Value"}
 	elementThree := KeyValueElement{"3Key", "3Value"}
 
-	dictionary := NewDictionary(KeyValueList{
+	dictionary, _ := NewDictionary([]KeyValueElement{
 		elementOne,
 		elementTwo,
 		elementThree,
 	})
 
-	assert.NotPanics(test, func() {
-		dictionary.Delete(elementTwo.Key)
-	}, "Unexpected error delenting an element")
+	result := dictionary.Delete(elementTwo.Key)
+	elements := *dictionary.Elements()
 
+	assert.Nil(test, result, "Unexpected error delenting an element")
 	assert.Len(test, dictionary.elements, 2, "Invalid number of elements after a element deletion")
-	assert.Equal(test, dictionary.Elements()[elementOne.Key], elementOne.Value, "Invalid expected elements after a single element deletion")
-	assert.Equal(test, dictionary.Elements()[elementThree.Key], elementThree.Value, "Invalid expected elements after a single element deletion")
+	assert.Equal(test, elements[elementOne.Key], elementOne.Value, "Invalid expected elements after a single element deletion")
+	assert.Equal(test, elements[elementThree.Key], elementThree.Value, "Invalid expected elements after a single element deletion")
 }
 
 func TestContainsMethod(test *testing.T) {
@@ -219,12 +211,12 @@ func TestFilterhMethod(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
 	elementTwo := KeyValueElement{"2Key", "2Value"}
 
-	dictionary := NewDictionary([]KeyValueElement{
+	dictionary, _ := NewDictionary([]KeyValueElement{
 		elementOne,
 		elementTwo,
 	})
 
-	matches := dictionary.Filter(func(elem KeyValueElement) bool {
+	matches := *dictionary.Filter(func(elem KeyValueElement) bool {
 		return strings.Contains(elem.Value.(string), "2")
 	})
 
@@ -261,11 +253,13 @@ func TestNewEmptyDictionary(test *testing.T) {
 func TestNewDictionary(test *testing.T) {
 	elementOne := KeyValueElement{"1Key", "1Value"}
 	elementTwo := KeyValueElement{"2Key", "2Value"}
-	elementList := KeyValueList{elementOne, elementTwo}
+	elementList := []KeyValueElement{elementOne, elementTwo}
 
-	dictionary := NewDictionary(elementList)
+	dictionary, err := NewDictionary(elementList)
+	elements := *dictionary.Elements()
 
+	assert.Nil(test, err, "Wrong behaviour instantiating new dictionary")
 	assert.Len(test, dictionary.elements, len(elementList), "New dictionary don't store elements parameters as elements")
-	assert.Equal(test, dictionary.Elements()[elementOne.Key], elementOne.Value, "New dictionary don't store elements parameters as elements")
-	assert.Equal(test, dictionary.Elements()[elementTwo.Key], elementTwo.Value, "New dictionary don't store elements parameters as elements")
+	assert.Equal(test, elements[elementOne.Key], elementOne.Value, "New dictionary don't store elements parameters as elements")
+	assert.Equal(test, elements[elementTwo.Key], elementTwo.Value, "New dictionary don't store elements parameters as elements")
 }
