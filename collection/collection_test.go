@@ -21,38 +21,21 @@ func TestAddMethod(test *testing.T) {
 	element := "first element"
 	collection := NewEmptyCollection()
 
-	if collection.Add(element) != nil {
-		test.Error("Wrong behaviour adding a element: bad error")
-	}
-
-	if len(collection.elements) != 1 || collection.elements[0] != element {
-		test.Error("Wrong behaviour adding a element")
-	}
-
-	if collection.Add(element) != ErrDuplicatedElement {
-		test.Error("Duplicated keys should return an error on Add method")
-	}
+	assert.Nil(test, collection.Add(element), "Wrong behaviour adding a element: bad error")
+	assert.EqualValues(test, len(collection.elements), 1, "Wrong behaviour adding a element")
+	assert.Equal(test, collection.elements[0], element, "Wrong behaviour adding a element")
+	assert.Error(test, collection.Add(element), ErrDuplicatedElement, "Duplicated keys should return an error on Add method")
 }
 
 func TestAddRangeMethod(test *testing.T) {
 	newElements := []string{"first element", "second element"}
+	invalidRange := "simple string"
 
 	collection := NewEmptyCollection()
 
-	if collection.AddRange(newElements) != nil {
-		test.Error("Wrong error returned adding a element range")
-	}
-
-	assert.Equal(test,
-		len(collection.elements),
-		len(newElements),
-		"Wrong behaviour adding a element range")
-
-	invalidRange := "simple string"
-
-	if collection.AddRange(invalidRange) == nil {
-		test.Error("Method should return an InvalidIterableElement error adding an invalid range")
-	}
+	assert.Nil(test, collection.AddRange(newElements), "Wrong error returned adding a element range")
+	assert.Equal(test, len(collection.elements), len(newElements), "Wrong behaviour adding a element range")
+	assert.Error(test, collection.AddRange(invalidRange), ErrInvalidElementType, "Method should return an InvalidIterableElement error adding an invalid range")
 }
 
 func TestAddCollectionMethod(test *testing.T) {
@@ -67,10 +50,7 @@ func TestAddCollectionMethod(test *testing.T) {
 	otherCollection.Add(elementTwo)
 	otherCollection.Add(elementThree)
 
-	if collection.AddCollection(otherCollection) != nil {
-		test.Error("Unexpected error adding a collection to another collection")
-	}
-
+	assert.Nil(test, collection.AddCollection(otherCollection), "Unexpected error adding a collection to another collection")
 	assert.Len(test, collection.elements, 3, "Wrong elements number adding a collection to another collection")
 }
 
@@ -152,7 +132,6 @@ func TestSetMethod(test *testing.T) {
 
 	collection := NewEmptyCollection()
 	collection.Add(elementOne)
-
 	collection.Set(0, elementTwo)
 
 	assert.Exactly(test, collection.elements[0], elementTwo, "Set method doesn't works properly")
@@ -170,12 +149,8 @@ func TestDeleteMethod(test *testing.T) {
 		elementThree,
 	})
 
-	if collection.Delete(elementTwo) != nil {
-		test.Error("Unexpected error delenting an element")
-	}
-
+	assert.Nil(test, collection.Delete(elementTwo), "Unexpected error delenting an element")
 	assert.Len(test, collection.elements, 2, "Invalid number of elements after a element deletion")
-
 	assert.Exactly(test, collection.elements[0], elementOne, "Invalid expected elements after a single element deletion")
 	assert.Exactly(test, collection.elements[1], elementThree, "Invalid expected elements after a single element deletion")
 }
@@ -193,10 +168,7 @@ func TestDeleteRangeMethod(test *testing.T) {
 		elementFour,
 	})
 
-	if collection.DeleteRange([]string{elementOne, elementThree}) != nil {
-		test.Error("Unexpected error delenting a range elements")
-	}
-
+	assert.Nil(test, collection.DeleteRange([]string{elementOne, elementThree}), "Unexpected error delenting a range elements")
 	assert.Len(test, collection.elements, 2, "Wrong elements number deleting  a collection to another collection")
 
 	for _, element := range collection.elements {
@@ -221,10 +193,7 @@ func TestDeleteCollectionMethod(test *testing.T) {
 		elementThree,
 	})
 
-	if collection.DeleteCollection(otherCollection) != nil {
-		test.Error("Unexpected error deleting a collection from another collection")
-	}
-
+	assert.Nil(test, collection.DeleteCollection(otherCollection), "Unexpected error deleting a collection from another collection")
 	assert.Len(test, collection.elements, 1, "Wrong elements number deleting a collection from another collection")
 	assert.Exactly(test, collection.elements[0], elementTwo, "Wrong elements number deleting a collection from another collection")
 }
